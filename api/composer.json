@@ -1,0 +1,14 @@
+{
+    "name": "iliadis/brig-api",
+    "description": "Server-side helpers for BRIG. Server-side PDF uses the File_PDF class (an FPDF-style library, e.g. the PEAR File_PDF package), which is NOT installed via Composer. Install File_PDF with PEAR (pear install File_PDF), upload File/PDF.php, or set pdf.file_pdf_path in the private config. If unavailable, the PDF endpoint falls back to a print-ready HTML page.",
+    "type": "project",
+    "require": {},
+    "suggest": {
+        "ext-iconv": "Recommended: converts UTF-8 text to Latin-1 for File_PDF core fonts.",
+        "ext-mbstring": "Optional fallback for text encoding."
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
+

@@ -1,0 +1,13 @@
+# BRIG — Apache configuration (cPanel). Place this in the web root.
+Options -Indexes
+
+
+<IfModule mod_headers.c>
+  # A strict CSP can be tightened to match your final asset hosts.
+  Header set Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; font-src 'self'; base-uri 'self'; frame-ancestors 'self'"
+</IfModule>
+
+# Block direct web access to server-side / private folders (PHP reads them
+# from the filesystem instead).
+RedirectMatch 404 ^/(database|data|scripts|tests|private-config)(/|$)
+

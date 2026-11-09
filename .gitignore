@@ -1,0 +1,82 @@
+# Dependencies
+node_modules/
+# Build output
+dist/
+dist-ssr/
+# Local env / config (never commit secrets)
+.env
+.env.*
+!.env.example
+private-config/
+# Local private config with real secrets (never commit)
+/brig.php
+# Logs
+*.log
+npm-debug.log*
+# Editor / OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+# Test / coverage
+coverage/
+*.tsbuildinfo
+# Seed export temp bundles
+.tmp-seed/
+scripts/.tmp-seed/
+# Composer / PHP server deps (installed on the host, not committed)
+/vendor/
+/api/vendor/
+composer.phar
+# Plaintext one-time AI access tokens — NEVER commit
+ai-access-tokens.txt
+# PHP local runtime bits
+/api/storage/*
+!/api/storage/.gitkeep
+# Vibe coding markdown files
+requirements/
+requirements
+#Development plan in markdown
+CISO_Board_Reporting_Development_Plan.md
+# ==========================================
+# 1. API Keys & Secrets (CRITICAL FOR VIBE CODING)
+# ==========================================
+.env
+.env.*
+!.env.example
+*.pem
+secrets.json
+
+# ==========================================
+# 2. AI Tool Metadata & Prompts
+# ==========================================
+.cursor/
+.windsurf/
+.claude/
+.copilot/
+*.prompts
+
+# ==========================================
+# 3. VS Code & OS Files
+# ==========================================
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+
+# ==========================================
+# 4. Local Logs & Caches
+# ==========================================
+*.log
+npm-debug.log*
+yarn-debug.log*
+.cache/
+#Config files root folder etc
+llms.txt
+sitemap.xml
+robots.txt
+
