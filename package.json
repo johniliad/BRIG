@@ -27,7 +27,12 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
     "typescript": "^5.5.4",
-    "vite": "^5.4.6",
-    "vitest": "^2.1.1"
+    "vite": "^6.4.4",
+    "vitest": "^4.1.12"
+  },
+  "overrides": {
+    "pptxgenjs": {
+      "image-size": "2.0.3"
+    }
   }
 }
