@@ -1,0 +1,21 @@
+# API directory hardening.
+Options -Indexes
+
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "no-referrer"
+  Header set X-Frame-Options "DENY"
+  # Keep internal API responses out of search engine indexes (server-side
+  # backstop to the robots.txt Disallow rules).
+  Header set X-Robots-Tag "noindex, nofollow, noarchive"
+</IfModule>
+
+# Only allow the intended PHP entry points; block library includes and anything else.
+<FilesMatch "\.(json|md|sql|example\.php|lock)$">
+  Require all denied
+</FilesMatch>
+
+# lib/ files and installed dependencies are includes, not entry points.
+RedirectMatch 404 ^/api/lib(/|$)
+RedirectMatch 404 ^/api/storage(/|$)
+RedirectMatch 404 ^/api/vendor(/|$)

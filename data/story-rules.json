@@ -1,0 +1,1045 @@
+{
+  "library_version": "1.0.0",
+  "story_rules": [
+    {
+      "rule_key": "more_activity_better_response",
+      "name": "Higher activity with improving response",
+      "priority": 80,
+      "storyline_key": "operational_resilience_despite_threat_pressure",
+      "storyline_title": "Threat activity increased, but response effectiveness improved",
+      "severity": "positive",
+      "all": [
+        {
+          "m": "total_security_incidents",
+          "test": "up"
+        },
+        {
+          "m": "critical_security_incidents",
+          "test": "down"
+        },
+        {
+          "m": "mttd",
+          "test": "improving"
+        }
+      ],
+      "executiveExplanation": "Incident volume rose while critical incidents fell and detection improved. This is consistent with stronger detection and containment absorbing higher threat pressure, rather than a deteriorating security position.",
+      "boardImplication": "The increase in reported activity is not, on its own, a sign of weaker security. Read it alongside the improving response metrics.",
+      "recommendedAction": "maintain_course",
+      "preferredCharts": [
+        "line",
+        "grouped_bar"
+      ],
+      "counterSignals": [
+        "cyber_downtime",
+        "material_security_incidents",
+        "critical_service_availability"
+      ],
+      "variants": [
+        "Higher activity, stronger response: threat pressure rose but response effectiveness improved.",
+        "More incidents, fewer criticals: response capability appears to keep pace with threat pressure."
+      ]
+    },
+    {
+      "rule_key": "quiet_but_deteriorating",
+      "name": "Quiet volume but deteriorating indicators",
+      "priority": 92,
+      "storyline_key": "hidden_deterioration",
+      "storyline_title": "Hidden deterioration behind a stable incident volume",
+      "severity": "elevated",
+      "all": [
+        {
+          "m": "mttd",
+          "test": "deteriorating"
+        },
+        {
+          "m": "mttr",
+          "test": "deteriorating"
+        }
+      ],
+      "any": [
+        {
+          "m": "critical_security_incidents",
+          "test": "up"
+        },
+        {
+          "m": "total_security_incidents",
+          "test": "flat"
+        }
+      ],
+      "executiveExplanation": "Incident volume appears stable, but detection and response times worsened and critical incidents rose. A quiet headline number masks deteriorating response capability.",
+      "boardImplication": "Stable incident counts should not reassure the Board when the underlying response indicators are deteriorating.",
+      "recommendedAction": "request_management_action",
+      "preferredCharts": [
+        "line",
+        "bar"
+      ],
+      "counterSignals": [
+        "control_testing_pass_rate",
+        "critical_service_availability"
+      ]
+    },
+    {
+      "rule_key": "exposure_concentration",
+      "name": "Exposure count down but exploited vulnerabilities up",
+      "priority": 85,
+      "storyline_key": "exposure_concentration",
+      "storyline_title": "Lower vulnerability volume, but higher-risk exposure concentrated",
+      "severity": "watch",
+      "all": [
+        {
+          "m": "total_open_vulnerabilities",
+          "test": "down"
+        },
+        {
+          "m": "kev_count",
+          "test": "up"
+        }
+      ],
+      "executiveExplanation": "The overall vulnerability count fell while known-exploited vulnerabilities rose, indicating that exposure is concentrating in higher-risk items.",
+      "boardImplication": "A falling total can hide rising real-world exploitation risk; prioritisation matters more than raw counts.",
+      "recommendedAction": "accelerate_remediation",
+      "preferredCharts": [
+        "bar",
+        "line"
+      ],
+      "counterSignals": [
+        "internet_facing_critical_vulns",
+        "vulnerability_remediation_sla"
+      ]
+    },
+    {
+      "rule_key": "investment_outcome_positive",
+      "name": "Investment translating into improved capability",
+      "priority": 78,
+      "storyline_key": "investment_translating_to_outcomes",
+      "storyline_title": "Investment coincided with improved defensive capability",
+      "severity": "positive",
+      "all": [
+        {
+          "m": "cyber_budget",
+          "test": "up"
+        },
+        {
+          "m": "mttr",
+          "test": "improving"
+        }
+      ],
+      "any": [
+        {
+          "m": "mfa_coverage",
+          "test": "up"
+        },
+        {
+          "m": "edr_coverage",
+          "test": "up"
+        },
+        {
+          "m": "critical_vulnerabilities",
+          "test": "down"
+        }
+      ],
+      "executiveExplanation": "Increased security investment coincided with faster response and broader control coverage, consistent with investment translating into defensive capability.",
+      "boardImplication": "Evidence the Board can cite that additional investment is yielding measurable capability gains.",
+      "recommendedAction": "maintain_course",
+      "preferredCharts": [
+        "grouped_bar",
+        "line"
+      ],
+      "counterSignals": [
+        "material_security_incidents",
+        "cyber_downtime"
+      ]
+    },
+    {
+      "rule_key": "investment_without_outcome",
+      "name": "Investment up without clear outcome",
+      "priority": 74,
+      "storyline_key": "investment_without_outcome",
+      "storyline_title": "Investment increased without clear outcome evidence",
+      "severity": "watch",
+      "all": [
+        {
+          "m": "cyber_budget",
+          "test": "up"
+        }
+      ],
+      "any": [
+        {
+          "m": "material_security_incidents",
+          "test": "up"
+        },
+        {
+          "m": "critical_vuln_backlog",
+          "test": "up"
+        },
+        {
+          "m": "control_testing_pass_rate",
+          "test": "flat"
+        }
+      ],
+      "executiveExplanation": "Security investment increased while outcome metrics failed to show clear improvement. This warrants an investment-effectiveness review; it is not proof of poor management and may reflect lead time.",
+      "boardImplication": "The Board should ask for the expected outcome timeline and leading indicators of return on this investment.",
+      "recommendedAction": "redirect_investment",
+      "preferredCharts": [
+        "bar",
+        "line"
+      ],
+      "counterSignals": [
+        "programme_completion_rate",
+        "initiative_delivery_rate"
+      ]
+    },
+    {
+      "rule_key": "human_risk_compliance_gap",
+      "name": "High awareness completion but high phishing failure",
+      "priority": 70,
+      "storyline_key": "human_risk_compliance_gap",
+      "storyline_title": "Training completion does not guarantee behavioural effectiveness",
+      "severity": "watch",
+      "all": [
+        {
+          "m": "awareness_completion",
+          "test": "gte",
+          "v": 90
+        },
+        {
+          "m": "phishing_failure_rate",
+          "test": "gte",
+          "v": 8
+        }
+      ],
+      "executiveExplanation": "Awareness completion is high while phishing-simulation failure remains elevated, distinguishing compliance activity from actual behavioural resilience.",
+      "boardImplication": "Completion rates alone can overstate human-risk reduction; behavioural metrics deserve Board attention.",
+      "recommendedAction": "reduce_exposure",
+      "preferredCharts": [
+        "grouped_bar",
+        "before_after"
+      ],
+      "counterSignals": [
+        "repeat_phishing_failure_rate",
+        "high_risk_user_population"
+      ]
+    },
+    {
+      "rule_key": "resilience_assurance_gap",
+      "name": "Strong availability but weak recovery assurance",
+      "priority": 82,
+      "storyline_key": "resilience_concern",
+      "storyline_title": "Operational performance looks strong, but recovery assurance is weak",
+      "severity": "elevated",
+      "all": [
+        {
+          "m": "critical_service_availability",
+          "test": "gte",
+          "v": 99
+        },
+        {
+          "m": "restore_test_success_rate",
+          "test": "lte",
+          "v": 70
+        }
+      ],
+      "executiveExplanation": "Availability is high, but restore-test success is weak. The organisation may be relying on steady-state performance while unproven recovery creates hidden resilience risk.",
+      "boardImplication": "Recovery should be evidenced by testing, not assumed from uptime.",
+      "recommendedAction": "increase_assurance",
+      "preferredCharts": [
+        "bar",
+        "target_bar"
+      ],
+      "counterSignals": [
+        "dr_exercise_success_rate",
+        "backup_success_rate"
+      ]
+    },
+    {
+      "rule_key": "supplier_concentration",
+      "name": "Supplier concentration with rising high-risk findings",
+      "priority": 76,
+      "storyline_key": "third_party_risk_concentration",
+      "storyline_title": "Supply-chain concentration risk is compounding",
+      "severity": "elevated",
+      "all": [
+        {
+          "m": "supplier_concentration_risk",
+          "test": "gte",
+          "v": 50
+        },
+        {
+          "m": "supplier_high_risk_findings",
+          "test": "up"
+        }
+      ],
+      "executiveExplanation": "Concentration in critical suppliers is high while high-risk supplier findings are rising, compounding supply-chain exposure.",
+      "boardImplication": "Concentration amplifies the impact of any single supplier failure or compromise.",
+      "recommendedAction": "reduce_exposure",
+      "preferredCharts": [
+        "horizontal_bar",
+        "quadrant"
+      ],
+      "counterSignals": [
+        "supplier_assessment_coverage",
+        "supplier_remediation_sla"
+      ]
+    },
+    {
+      "rule_key": "identity_security_improvement",
+      "name": "Identity controls improving",
+      "priority": 60,
+      "storyline_key": "identity_security_improvement",
+      "storyline_title": "Identity controls are strengthening",
+      "severity": "positive",
+      "all": [
+        {
+          "m": "mfa_coverage",
+          "test": "improving"
+        }
+      ],
+      "any": [
+        {
+          "m": "identity_incidents",
+          "test": "down"
+        },
+        {
+          "m": "privileged_access_violations",
+          "test": "down"
+        },
+        {
+          "m": "account_compromise_incidents",
+          "test": "down"
+        }
+      ],
+      "executiveExplanation": "MFA coverage improved while identity-related incidents and privileged-access violations fell, consistent with strengthening identity controls.",
+      "boardImplication": "Identity remains the most common attack path; this improvement reduces a high-impact exposure.",
+      "recommendedAction": "maintain_course",
+      "preferredCharts": [
+        "line",
+        "grouped_bar"
+      ],
+      "counterSignals": [
+        "privileged_account_count",
+        "dormant_account_count"
+      ]
+    },
+    {
+      "rule_key": "resilience_improving",
+      "name": "Resilience improving",
+      "priority": 58,
+      "storyline_key": "resilience_improving",
+      "storyline_title": "Operational resilience is improving",
+      "severity": "positive",
+      "all": [
+        {
+          "m": "critical_service_availability",
+          "test": "improving"
+        }
+      ],
+      "any": [
+        {
+          "m": "cyber_downtime",
+          "test": "down"
+        },
+        {
+          "m": "restore_test_success_rate",
+          "test": "up"
+        }
+      ],
+      "executiveExplanation": "Availability improved while downtime fell or recovery testing strengthened, consistent with improving resilience.",
+      "boardImplication": "Stronger resilience reduces the operational and financial impact of disruptive events.",
+      "recommendedAction": "maintain_course",
+      "preferredCharts": [
+        "line",
+        "bar"
+      ],
+      "counterSignals": [
+        "dr_exercise_success_rate",
+        "backup_success_rate"
+      ]
+    },
+    {
+      "rule_key": "resilience_decline",
+      "name": "Resilience deteriorating",
+      "priority": 84,
+      "storyline_key": "resilience_concern",
+      "storyline_title": "Resilience indicators are deteriorating",
+      "severity": "elevated",
+      "all": [
+        {
+          "m": "cyber_downtime",
+          "test": "up"
+        }
+      ],
+      "any": [
+        {
+          "m": "critical_service_availability",
+          "test": "down"
+        },
+        {
+          "m": "restore_test_success_rate",
+          "test": "down"
+        }
+      ],
+      "executiveExplanation": "Cyber-related downtime rose while availability or recovery indicators weakened, pointing to a resilience concern.",
+      "boardImplication": "Rising downtime directly affects customers and revenue and warrants Board attention.",
+      "recommendedAction": "request_management_action",
+      "preferredCharts": [
+        "line",
+        "bar"
+      ],
+      "counterSignals": [
+        "material_security_incidents",
+        "ransomware_incidents"
+      ]
+    },
+    {
+      "rule_key": "exposure_reduction",
+      "name": "Exposure reduction",
+      "priority": 55,
+      "storyline_key": "exposure_reduction",
+      "storyline_title": "Technical exposure is being reduced",
+      "severity": "positive",
+      "all": [
+        {
+          "m": "critical_vulnerabilities",
+          "test": "down"
+        },
+        {
+          "m": "kev_count",
+          "test": "down"
+        }
+      ],
+      "executiveExplanation": "Critical and known-exploited vulnerabilities both fell, consistent with genuine exposure reduction.",
+      "boardImplication": "A sustained reduction in high-risk exposure lowers the likelihood of a material incident.",
+      "recommendedAction": "maintain_course",
+      "preferredCharts": [
+        "line",
+        "bar"
+      ],
+      "counterSignals": [
+        "internet_facing_critical_vulns",
+        "vulnerability_remediation_sla"
+      ]
+    },
+    {
+      "rule_key": "vulnerability_backlog_deterioration",
+      "name": "Vulnerability backlog deteriorating",
+      "priority": 72,
+      "storyline_key": "vulnerability_backlog_deterioration",
+      "storyline_title": "The vulnerability backlog is deteriorating",
+      "severity": "watch",
+      "all": [
+        {
+          "m": "critical_vuln_backlog",
+          "test": "up"
+        }
+      ],
+      "any": [
+        {
+          "m": "vulnerability_remediation_sla",
+          "test": "down"
+        },
+        {
+          "m": "mean_time_to_remediate",
+          "test": "deteriorating"
+        }
+      ],
+      "executiveExplanation": "The critical remediation backlog rose while remediation pace slowed, indicating exposure is accumulating.",
+      "boardImplication": "A growing backlog increases the window during which known weaknesses can be exploited.",
+      "recommendedAction": "accelerate_remediation",
+      "preferredCharts": [
+        "bar",
+        "line"
+      ],
+      "counterSignals": [
+        "security_headcount",
+        "security_vacancies"
+      ]
+    },
+    {
+      "rule_key": "detection_effectiveness_improving",
+      "name": "Detection effectiveness improving",
+      "priority": 57,
+      "storyline_key": "detection_effectiveness_improving",
+      "storyline_title": "Detection effectiveness is improving",
+      "severity": "positive",
+      "all": [
+        {
+          "m": "mttd",
+          "test": "improving"
+        }
+      ],
+      "any": [
+        {
+          "m": "detection_coverage",
+          "test": "up"
+        },
+        {
+          "m": "edr_coverage",
+          "test": "up"
+        }
+      ],
+      "executiveExplanation": "Detection time improved alongside broader coverage, consistent with stronger detection capability.",
+      "boardImplication": "Faster detection limits attacker dwell time and downstream impact.",
+      "recommendedAction": "maintain_course",
+      "preferredCharts": [
+        "line",
+        "grouped_bar"
+      ],
+      "counterSignals": [
+        "high_severity_alert_volume",
+        "automated_response_rate"
+      ]
+    },
+    {
+      "rule_key": "response_deterioration",
+      "name": "Response effectiveness deteriorating",
+      "priority": 80,
+      "storyline_key": "response_deterioration",
+      "storyline_title": "Response effectiveness is deteriorating",
+      "severity": "watch",
+      "all": [
+        {
+          "m": "mttr",
+          "test": "deteriorating"
+        }
+      ],
+      "executiveExplanation": "Response time worsened, indicating declining containment effectiveness.",
+      "boardImplication": "Slower response extends exposure and increases potential business impact.",
+      "recommendedAction": "request_management_action",
+      "preferredCharts": [
+        "line"
+      ],
+      "counterSignals": [
+        "automated_response_rate",
+        "critical_security_incidents"
+      ]
+    },
+    {
+      "rule_key": "threat_pressure_increasing",
+      "name": "Threat pressure increasing",
+      "priority": 50,
+      "storyline_key": "threat_pressure_increasing",
+      "storyline_title": "Threat pressure is increasing",
+      "severity": "info",
+      "all": [
+        {
+          "m": "total_security_incidents",
+          "test": "up"
+        }
+      ],
+      "any": [
+        {
+          "m": "high_severity_incidents",
+          "test": "up"
+        },
+        {
+          "m": "critical_security_incidents",
+          "test": "up"
+        }
+      ],
+      "executiveExplanation": "Incident volume and severity rose, indicating higher threat pressure.",
+      "boardImplication": "Rising threat pressure raises the importance of sustained detection and response capacity.",
+      "recommendedAction": "monitor",
+      "preferredCharts": [
+        "line",
+        "bar"
+      ],
+      "counterSignals": [
+        "mttd",
+        "mttr",
+        "critical_service_availability"
+      ]
+    },
+    {
+      "rule_key": "threat_pressure_decreasing",
+      "name": "Threat pressure decreasing",
+      "priority": 48,
+      "storyline_key": "threat_pressure_decreasing",
+      "storyline_title": "Threat pressure appears to be easing",
+      "severity": "positive",
+      "all": [
+        {
+          "m": "total_security_incidents",
+          "test": "down"
+        },
+        {
+          "m": "high_severity_incidents",
+          "test": "down"
+        }
+      ],
+      "executiveExplanation": "Incident volume and high-severity counts fell, consistent with easing threat pressure or stronger prevention.",
+      "boardImplication": "Easing numbers should be validated against detection coverage before relaxing controls.",
+      "recommendedAction": "monitor",
+      "preferredCharts": [
+        "line"
+      ],
+      "counterSignals": [
+        "detection_coverage",
+        "material_security_incidents"
+      ]
+    },
+    {
+      "rule_key": "human_risk_improvement",
+      "name": "Human-risk posture improving",
+      "priority": 52,
+      "storyline_key": "human_risk_improvement",
+      "storyline_title": "Human-risk indicators are improving",
+      "severity": "positive",
+      "all": [
+        {
+          "m": "phishing_failure_rate",
+          "test": "down"
+        }
+      ],
+      "any": [
+        {
+          "m": "repeat_phishing_failure_rate",
+          "test": "down"
+        }
+      ],
+      "executiveExplanation": "Phishing failure fell, consistent with improving behavioural resilience.",
+      "boardImplication": "Lower human-risk exposure reduces a common breach vector.",
+      "recommendedAction": "maintain_course",
+      "preferredCharts": [
+        "line",
+        "before_after"
+      ],
+      "counterSignals": [
+        "awareness_completion",
+        "human_incidents"
+      ]
+    },
+    {
+      "rule_key": "human_risk_deterioration",
+      "name": "Human-risk posture deteriorating",
+      "priority": 66,
+      "storyline_key": "human_risk_deterioration",
+      "storyline_title": "Human-risk indicators are deteriorating",
+      "severity": "watch",
+      "all": [
+        {
+          "m": "phishing_failure_rate",
+          "test": "up"
+        }
+      ],
+      "executiveExplanation": "Phishing-simulation failure rose, indicating increasing human-risk exposure.",
+      "boardImplication": "Rising human-risk exposure warrants targeted intervention, not only more training volume.",
+      "recommendedAction": "reduce_exposure",
+      "preferredCharts": [
+        "line",
+        "bar"
+      ],
+      "counterSignals": [
+        "repeat_phishing_failure_rate",
+        "high_risk_user_population"
+      ]
+    },
+    {
+      "rule_key": "regulatory_assurance_pressure",
+      "name": "Regulatory and assurance pressure",
+      "priority": 68,
+      "storyline_key": "regulatory_assurance_pressure",
+      "storyline_title": "Regulatory and assurance pressure is elevated",
+      "severity": "watch",
+      "all": [
+        {
+          "m": "regulatory_findings",
+          "test": "up"
+        }
+      ],
+      "any": [
+        {
+          "m": "control_testing_pass_rate",
+          "test": "down"
+        },
+        {
+          "m": "overdue_audit_findings",
+          "test": "up"
+        }
+      ],
+      "executiveExplanation": "Regulatory findings rose while controls or audit timeliness weakened, indicating assurance pressure.",
+      "boardImplication": "Assurance pressure carries regulatory and reputational consequences.",
+      "recommendedAction": "increase_assurance",
+      "preferredCharts": [
+        "bar",
+        "line"
+      ],
+      "counterSignals": [
+        "assurance_coverage",
+        "control_testing_pass_rate"
+      ]
+    },
+    {
+      "rule_key": "risk_appetite_pressure",
+      "name": "Risk appetite pressure",
+      "priority": 71,
+      "storyline_key": "risk_appetite_pressure",
+      "storyline_title": "Risk appetite is under pressure",
+      "severity": "elevated",
+      "all": [
+        {
+          "m": "risk_appetite_breaches",
+          "test": "up"
+        }
+      ],
+      "any": [
+        {
+          "m": "residual_risk_score",
+          "test": "up"
+        },
+        {
+          "m": "open_high_risk_findings",
+          "test": "up"
+        }
+      ],
+      "executiveExplanation": "Risk-appetite breaches rose alongside residual risk or open findings, indicating the appetite is under pressure.",
+      "boardImplication": "Sustained appetite breaches require an explicit Board decision on tolerance or treatment.",
+      "recommendedAction": "review_risk_appetite",
+      "preferredCharts": [
+        "bar",
+        "line"
+      ],
+      "counterSignals": [
+        "control_testing_pass_rate",
+        "residual_risk_score"
+      ]
+    },
+    {
+      "rule_key": "control_strength_rising_impact",
+      "name": "Controls improving but business impact rising",
+      "priority": 73,
+      "storyline_key": "improving_controls_rising_business_impact",
+      "storyline_title": "Controls are improving, but business impact is rising",
+      "severity": "watch",
+      "all": [
+        {
+          "m": "control_testing_pass_rate",
+          "test": "improving"
+        }
+      ],
+      "any": [
+        {
+          "m": "cyber_downtime",
+          "test": "up"
+        },
+        {
+          "m": "material_security_incidents",
+          "test": "up"
+        }
+      ],
+      "executiveExplanation": "Control testing improved, but business-impact indicators worsened, suggesting a gap between control compliance and realised outcomes.",
+      "boardImplication": "Improving control scores should be reconciled with rising business impact before declaring success.",
+      "recommendedAction": "increase_assurance",
+      "preferredCharts": [
+        "grouped_bar",
+        "line"
+      ],
+      "counterSignals": [
+        "residual_risk_score",
+        "critical_service_availability"
+      ]
+    },
+    {
+      "rule_key": "programme_delivery_momentum",
+      "name": "Programme delivery momentum",
+      "priority": 45,
+      "storyline_key": "security_maturity_progressing",
+      "storyline_title": "The security programme is progressing",
+      "severity": "positive",
+      "all": [
+        {
+          "m": "initiative_delivery_rate",
+          "test": "improving"
+        }
+      ],
+      "any": [
+        {
+          "m": "programme_completion_rate",
+          "test": "up"
+        },
+        {
+          "m": "cyber_maturity_score",
+          "test": "up"
+        }
+      ],
+      "executiveExplanation": "Initiative delivery improved alongside programme completion or maturity, consistent with execution momentum.",
+      "boardImplication": "Delivery momentum supports confidence that the security strategy is being executed.",
+      "recommendedAction": "maintain_course",
+      "preferredCharts": [
+        "line",
+        "bar"
+      ],
+      "counterSignals": [
+        "security_vacancies",
+        "security_staff_turnover"
+      ]
+    },
+    {
+      "rule_key": "data_breach_concern",
+      "name": "Data-breach exposure concern",
+      "priority": 88,
+      "storyline_key": "data_breach_concern",
+      "storyline_title": "Data-breach exposure requires Board attention",
+      "severity": "critical",
+      "all": [
+        {
+          "m": "data_breach_incidents",
+          "test": "up"
+        }
+      ],
+      "any": [
+        {
+          "m": "records_affected",
+          "test": "up"
+        },
+        {
+          "m": "material_security_incidents",
+          "test": "up"
+        }
+      ],
+      "executiveExplanation": "Data-breach incidents rose, with records affected or material incidents also increasing, indicating serious data-protection exposure.",
+      "boardImplication": "Data breaches carry regulatory, financial and reputational consequences that are intrinsically Board-level.",
+      "recommendedAction": "request_management_action",
+      "preferredCharts": [
+        "bar",
+        "line"
+      ],
+      "counterSignals": [
+        "sensitive_data_encryption_coverage",
+        "dlp_coverage"
+      ]
+    },
+    {
+      "rule_key": "maturity_progressing",
+      "name": "Security maturity progressing",
+      "priority": 44,
+      "storyline_key": "security_maturity_progressing",
+      "storyline_title": "Security maturity is progressing",
+      "severity": "positive",
+      "all": [
+        {
+          "m": "cyber_maturity_score",
+          "test": "improving"
+        }
+      ],
+      "any": [
+        {
+          "m": "control_testing_pass_rate",
+          "test": "up"
+        },
+        {
+          "m": "programme_completion_rate",
+          "test": "up"
+        }
+      ],
+      "executiveExplanation": "Maturity improved alongside control effectiveness or programme completion, consistent with progressing capability.",
+      "boardImplication": "Progressing maturity supports a trajectory of reducing long-term risk.",
+      "recommendedAction": "maintain_course",
+      "preferredCharts": [
+        "line",
+        "radar"
+      ],
+      "counterSignals": [
+        "security_vacancies",
+        "cyber_downtime"
+      ]
+    },
+    {
+      "rule_key": "operational_stability_under_pressure",
+      "name": "Operational stability despite higher activity",
+      "priority": 62,
+      "storyline_key": "operational_stability_despite_pressure",
+      "storyline_title": "Operational stability held despite higher activity",
+      "severity": "positive",
+      "all": [
+        {
+          "m": "total_security_incidents",
+          "test": "up"
+        },
+        {
+          "m": "mttr",
+          "test": "improving"
+        }
+      ],
+      "any": [
+        {
+          "m": "critical_service_availability",
+          "test": "flat"
+        },
+        {
+          "m": "critical_service_availability",
+          "test": "improving"
+        }
+      ],
+      "executiveExplanation": "Despite higher incident activity, response improved and availability held, indicating operational stability under pressure.",
+      "boardImplication": "This demonstrates resilience of operations in the face of increased threat activity.",
+      "recommendedAction": "maintain_course",
+      "preferredCharts": [
+        "line",
+        "grouped_bar"
+      ],
+      "counterSignals": [
+        "cyber_downtime",
+        "material_security_incidents"
+      ]
+    },
+    {
+      "rule_key": "identity_exposure_concern",
+      "name": "Identity exposure concern",
+      "priority": 79,
+      "storyline_key": "identity_exposure_concern",
+      "storyline_title": "Identity exposure is a material concern",
+      "severity": "elevated",
+      "all": [
+        {
+          "m": "mfa_coverage",
+          "test": "deteriorating"
+        }
+      ],
+      "any": [
+        {
+          "m": "identity_incidents",
+          "test": "up"
+        },
+        {
+          "m": "account_compromise_incidents",
+          "test": "up"
+        }
+      ],
+      "executiveExplanation": "MFA coverage fell while identity incidents rose, indicating rising identity exposure.",
+      "boardImplication": "Identity weaknesses are the most common route to significant breaches.",
+      "recommendedAction": "reduce_exposure",
+      "preferredCharts": [
+        "line",
+        "grouped_bar"
+      ],
+      "counterSignals": [
+        "privileged_mfa_coverage",
+        "privileged_account_count"
+      ]
+    },
+    {
+      "rule_key": "availability_concern",
+      "name": "Critical-service availability concern",
+      "priority": 86,
+      "storyline_key": "resilience_concern",
+      "storyline_title": "Critical-service availability is a concern",
+      "severity": "elevated",
+      "all": [
+        {
+          "m": "critical_service_availability",
+          "test": "deteriorating"
+        }
+      ],
+      "executiveExplanation": "Critical-service availability declined, a direct operational concern.",
+      "boardImplication": "Availability directly affects customers and revenue and must be addressed.",
+      "recommendedAction": "request_management_action",
+      "preferredCharts": [
+        "line",
+        "bar"
+      ],
+      "counterSignals": [
+        "cyber_downtime",
+        "restore_test_success_rate"
+      ]
+    },
+    {
+      "rule_key": "third_party_incident_pressure",
+      "name": "Third-party incident pressure",
+      "priority": 69,
+      "storyline_key": "third_party_risk_concentration",
+      "storyline_title": "Third-party incidents are increasing",
+      "severity": "watch",
+      "all": [
+        {
+          "m": "thirdparty_security_incidents",
+          "test": "up"
+        }
+      ],
+      "executiveExplanation": "Third-party security incidents rose, indicating increasing supply-chain exposure.",
+      "boardImplication": "Supply-chain incidents can materialise with little direct operational warning.",
+      "recommendedAction": "reduce_exposure",
+      "preferredCharts": [
+        "bar",
+        "line"
+      ],
+      "counterSignals": [
+        "supplier_assessment_coverage",
+        "supplier_remediation_sla"
+      ]
+    },
+    {
+      "rule_key": "governance_improvement",
+      "name": "Governance and assurance improving",
+      "priority": 43,
+      "storyline_key": "security_maturity_progressing",
+      "storyline_title": "Governance and assurance are improving",
+      "severity": "positive",
+      "all": [
+        {
+          "m": "control_testing_pass_rate",
+          "test": "improving"
+        }
+      ],
+      "any": [
+        {
+          "m": "overdue_audit_findings",
+          "test": "down"
+        },
+        {
+          "m": "assurance_coverage",
+          "test": "up"
+        }
+      ],
+      "executiveExplanation": "Control effectiveness improved alongside audit or assurance metrics, consistent with stronger governance.",
+      "boardImplication": "Stronger assurance gives the Board greater confidence in the control environment.",
+      "recommendedAction": "maintain_course",
+      "preferredCharts": [
+        "line",
+        "bar"
+      ],
+      "counterSignals": [
+        "regulatory_findings",
+        "open_high_risk_findings"
+      ]
+    },
+    {
+      "rule_key": "strong_performance_residual_risk",
+      "name": "Strong performance with residual concentrated risk",
+      "priority": 47,
+      "storyline_key": "strong_performance_residual_risk",
+      "storyline_title": "Strong overall performance, with residual concentrated risk",
+      "severity": "info",
+      "all": [
+        {
+          "m": "critical_service_availability",
+          "test": "improving"
+        },
+        {
+          "m": "control_testing_pass_rate",
+          "test": "improving"
+        }
+      ],
+      "any": [
+        {
+          "m": "supplier_concentration_risk",
+          "test": "present"
+        },
+        {
+          "m": "cyber_downtime",
+          "test": "present"
+        }
+      ],
+      "executiveExplanation": "Operational and control performance improved, but residual concentrated risks remain that should not be lost in an otherwise positive picture.",
+      "boardImplication": "Strong headline performance should not obscure concentrated residual risk.",
+      "recommendedAction": "monitor",
+      "preferredCharts": [
+        "quadrant",
+        "radar"
+      ],
+      "counterSignals": [
+        "supplier_concentration_risk",
+        "cyber_downtime"
+      ]
+    }
+  ]
+}

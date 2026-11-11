@@ -1,0 +1,33 @@
+{
+  "name": "brig-ciso-board-reporting",
+  "private": true,
+  "version": "1.0.0",
+  "description": "BRIG — CISO Board Reporting Intelligence Generator. Deterministic executive cybersecurity reporting with an optional LLM writing layer.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "postbuild": "node scripts/postbuild-html.mjs",
+    "preview": "vite preview",
+    "typecheck": "tsc -b --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build:library": "node scripts/metric-spec.mjs",
+    "export:seed": "node scripts/export-seed.mjs"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.3",
+    "pptxgenjs": "^3.12.0",
+    "react": "^18.3.1",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.6",
+    "vitest": "^2.1.1"
+  }
+}

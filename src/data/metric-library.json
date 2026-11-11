@@ -1,0 +1,3913 @@
+{
+  "library_version": "1.0.0",
+  "metrics": [
+    {
+      "metric_key": "total_security_incidents",
+      "name": "Total security incidents",
+      "category": "incidents_threat",
+      "definition": "Total number of confirmed security incidents recorded in the reporting period.",
+      "executive_meaning": "Indicates overall threat pressure and reporting maturity; raw volume alone does not measure security posture.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "context_dependent",
+      "board_relevance": 4,
+      "trend_relevance": 4,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "material_security_incidents",
+        "critical_security_incidents",
+        "mttd"
+      ],
+      "story_tags": [
+        "threat_pressure",
+        "incidents"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment.",
+        "Interpretation is context-dependent; a change is not automatically good or bad."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "material_security_incidents",
+      "name": "Material security incidents",
+      "category": "incidents_threat",
+      "definition": "Incidents that met the organisation's materiality criteria (financial, operational or regulatory impact).",
+      "executive_meaning": "The clearest Board-relevant measure of realised business impact from security events.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 5,
+      "trend_relevance": 4,
+      "risk_relevance": 5,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "total_security_incidents",
+        "records_affected",
+        "cyber_downtime"
+      ],
+      "story_tags": [
+        "business_impact",
+        "incidents"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment.",
+        "Materiality criteria differ by organisation; state the definition used."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "critical_security_incidents",
+      "name": "Critical security incidents",
+      "category": "incidents_threat",
+      "definition": "Incidents classified as critical under the organisation's severity methodology.",
+      "executive_meaning": "Signals severity concentration and the potential for significant disruption or loss.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 5,
+      "trend_relevance": 4,
+      "risk_relevance": 5,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "material_security_incidents",
+        "mttr",
+        "critical_service_availability"
+      ],
+      "story_tags": [
+        "severity",
+        "incidents"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "high_severity_incidents",
+      "name": "High-severity security incidents",
+      "category": "incidents_threat",
+      "definition": "Incidents classified as high severity under the organisation's severity methodology.",
+      "executive_meaning": "Indicates the volume of serious events short of the critical threshold.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 4,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "critical_security_incidents",
+        "high_severity_alert_volume"
+      ],
+      "story_tags": [
+        "severity",
+        "incidents"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "ransomware_incidents",
+      "name": "Ransomware incidents",
+      "category": "incidents_threat",
+      "definition": "Number of confirmed ransomware-related incidents in the period.",
+      "executive_meaning": "Board-critical due to potential for severe operational, financial and reputational harm.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 5,
+      "trend_relevance": 3,
+      "risk_relevance": 5,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "immutable_backup_coverage",
+        "restore_test_success_rate",
+        "material_security_incidents"
+      ],
+      "story_tags": [
+        "ransomware",
+        "threat_pressure"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "phishing_incidents",
+      "name": "Phishing incidents",
+      "category": "incidents_threat",
+      "definition": "Number of confirmed phishing incidents affecting users or systems.",
+      "executive_meaning": "Reflects the effectiveness of email controls and human-risk mitigation.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "phishing_failure_rate",
+        "awareness_completion",
+        "account_compromise_incidents"
+      ],
+      "story_tags": [
+        "phishing",
+        "human_risk"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "bec_incidents",
+      "name": "Business email compromise incidents",
+      "category": "incidents_threat",
+      "definition": "Number of confirmed business email compromise incidents.",
+      "executive_meaning": "Indicates exposure to financially motivated impersonation and payment fraud.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "account_compromise_incidents",
+        "mfa_coverage",
+        "material_security_incidents"
+      ],
+      "story_tags": [
+        "fraud",
+        "identity"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "account_compromise_incidents",
+      "name": "Account compromise incidents",
+      "category": "incidents_threat",
+      "definition": "Number of confirmed incidents where a user or service account was compromised.",
+      "executive_meaning": "Signals the effectiveness of identity and access controls.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "mfa_coverage",
+        "identity_incidents",
+        "privileged_access_violations"
+      ],
+      "story_tags": [
+        "identity",
+        "incidents"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "insider_incidents",
+      "name": "Insider-related security incidents",
+      "category": "incidents_threat",
+      "definition": "Confirmed incidents involving malicious or negligent insider activity.",
+      "executive_meaning": "Indicates insider-risk exposure and the effectiveness of data and access monitoring.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "data_access_anomalies",
+        "excessive_data_access_privileges",
+        "dlp_incidents"
+      ],
+      "story_tags": [
+        "insider_risk",
+        "data"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "third_party_security_incidents",
+      "name": "Third-party security incidents",
+      "category": "incidents_threat",
+      "definition": "Security incidents originating from, or involving, third-party suppliers or partners.",
+      "executive_meaning": "Highlights supply-chain and ecosystem risk exposure outside direct operational control.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 5,
+      "trend_relevance": 3,
+      "risk_relevance": 5,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "supplier_concentration_risk",
+        "supplier_high_risk_findings",
+        "thirdparty_access_accounts"
+      ],
+      "story_tags": [
+        "third_party",
+        "supply_chain"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "mttd",
+      "name": "Mean Time to Detect (MTTD)",
+      "category": "detection_response",
+      "definition": "Average elapsed time between the start of a detectable security event and its detection.",
+      "executive_meaning": "Indicates detection effectiveness and operational responsiveness.",
+      "unit": "hours",
+      "data_type": "duration",
+      "directionality": "lower_is_better",
+      "board_relevance": 5,
+      "trend_relevance": 5,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "mttr",
+        "detection_coverage",
+        "total_security_incidents"
+      ],
+      "story_tags": [
+        "detection",
+        "resilience",
+        "security_operations"
+      ],
+      "caveats": [
+        "Durations depend on consistent start/stop definitions across the periods being compared."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "mttr",
+      "name": "Mean Time to Respond (MTTR)",
+      "category": "detection_response",
+      "definition": "Average elapsed time from detection to an effective response starting.",
+      "executive_meaning": "Indicates containment responsiveness and the maturity of incident handling.",
+      "unit": "hours",
+      "data_type": "duration",
+      "directionality": "lower_is_better",
+      "board_relevance": 5,
+      "trend_relevance": 5,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "mttd",
+        "mttc",
+        "critical_security_incidents"
+      ],
+      "story_tags": [
+        "response",
+        "resilience",
+        "security_operations"
+      ],
+      "caveats": [
+        "Durations depend on consistent start/stop definitions across the periods being compared."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "mttc",
+      "name": "Mean Time to Contain",
+      "category": "detection_response",
+      "definition": "Average elapsed time to contain an incident after detection.",
+      "executive_meaning": "Reflects the ability to limit blast radius once an incident is identified.",
+      "unit": "hours",
+      "data_type": "duration",
+      "directionality": "lower_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 4,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "mttr",
+        "mtte",
+        "material_security_incidents"
+      ],
+      "story_tags": [
+        "response",
+        "containment"
+      ],
+      "caveats": [
+        "Durations depend on consistent start/stop definitions across the periods being compared."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "mtte",
+      "name": "Mean Time to Eradicate",
+      "category": "detection_response",
+      "definition": "Average elapsed time to eradicate the threat from affected systems.",
+      "executive_meaning": "Indicates how quickly environments are returned to a trusted state.",
+      "unit": "hours",
+      "data_type": "duration",
+      "directionality": "lower_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 4,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "mttc",
+        "mean_time_to_remediate"
+      ],
+      "story_tags": [
+        "response",
+        "remediation"
+      ],
+      "caveats": [
+        "Durations depend on consistent start/stop definitions across the periods being compared."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "mttrecover",
+      "name": "Mean Time to Recover",
+      "category": "detection_response",
+      "definition": "Average elapsed time to restore normal service after an incident.",
+      "executive_meaning": "Links security response to business recovery and availability.",
+      "unit": "hours",
+      "data_type": "duration",
+      "directionality": "lower_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 4,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "critical_service_availability",
+        "cyber_downtime",
+        "rto_compliance"
+      ],
+      "story_tags": [
+        "recovery",
+        "resilience"
+      ],
+      "caveats": [
+        "Durations depend on consistent start/stop definitions across the periods being compared."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "high_severity_alert_volume",
+      "name": "High-severity alert volume",
+      "category": "detection_response",
+      "definition": "Number of high-severity alerts generated in the period.",
+      "executive_meaning": "Indicates detection coverage and SOC load; not directly a measure of security posture.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "context_dependent",
+      "board_relevance": 3,
+      "trend_relevance": 4,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "alert_to_incident_rate",
+        "high_severity_incidents",
+        "automated_response_rate"
+      ],
+      "story_tags": [
+        "detection",
+        "security_operations"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment.",
+        "Interpretation is context-dependent; a change is not automatically good or bad."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "alert_to_incident_rate",
+      "name": "Alert-to-incident conversion rate",
+      "category": "detection_response",
+      "definition": "Proportion of alerts that convert into confirmed incidents.",
+      "executive_meaning": "Helps assess alert quality and triage effectiveness.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "context_dependent",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "high_severity_alert_volume",
+        "automated_response_rate"
+      ],
+      "story_tags": [
+        "detection",
+        "triage"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology.",
+        "Interpretation is context-dependent; a change is not automatically good or bad."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "automated_response_rate",
+      "name": "Automated response rate",
+      "category": "detection_response",
+      "definition": "Proportion of qualifying alerts handled by automated response playbooks.",
+      "executive_meaning": "Indicates operational efficiency and the balance between automation and human analysis.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "alert_to_incident_rate",
+        "mttr",
+        "detection_coverage"
+      ],
+      "story_tags": [
+        "automation",
+        "response"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "detection_coverage",
+      "name": "Detection coverage",
+      "category": "detection_response",
+      "definition": "Estimated proportion of the estate covered by active detection controls.",
+      "executive_meaning": "Indicates visibility and the breadth of monitoring across the environment.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 5,
+      "trend_relevance": 4,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "edr_coverage",
+        "mttd",
+        "high_severity_alert_volume"
+      ],
+      "story_tags": [
+        "detection",
+        "coverage"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "incident_recurrence_rate",
+      "name": "Incident recurrence rate",
+      "category": "detection_response",
+      "definition": "Proportion of incidents that recur from a previously unresolved root cause.",
+      "executive_meaning": "Signals whether root causes are genuinely remediated or merely suppressed.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "lower_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "mtte",
+        "mean_time_to_remediate",
+        "control_testing_pass_rate"
+      ],
+      "story_tags": [
+        "remediation",
+        "quality"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "total_open_vulnerabilities",
+      "name": "Total open vulnerabilities",
+      "category": "vulnerability_exposure",
+      "definition": "Total number of open vulnerabilities across the estate.",
+      "executive_meaning": "Indicates the overall size of the technical exposure backlog.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 4,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "critical_vulnerabilities",
+        "vuln_backlog_ageing",
+        "mean_time_to_remediate"
+      ],
+      "story_tags": [
+        "exposure",
+        "vulnerability"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "critical_vulnerabilities",
+      "name": "Critical vulnerabilities",
+      "category": "vulnerability_exposure",
+      "definition": "Number of open vulnerabilities classified as critical under the chosen severity methodology.",
+      "executive_meaning": "Indicates the volume of high-severity technical exposure requiring prioritised treatment.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 5,
+      "trend_relevance": 4,
+      "risk_relevance": 5,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "kev_count",
+        "internet_facing_critical_vulns",
+        "vulnerability_remediation_sla"
+      ],
+      "story_tags": [
+        "exposure",
+        "vulnerability",
+        "risk"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "high_severity_vulnerabilities",
+      "name": "High-severity vulnerabilities",
+      "category": "vulnerability_exposure",
+      "definition": "Number of open vulnerabilities classified as high severity.",
+      "executive_meaning": "Indicates the volume of serious, though non-critical, exposure.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 4,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "critical_vulnerabilities",
+        "vulnerability_remediation_sla"
+      ],
+      "story_tags": [
+        "exposure",
+        "vulnerability"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "kev_count",
+      "name": "Known Exploited Vulnerabilities (KEV)",
+      "category": "vulnerability_exposure",
+      "definition": "Number of open vulnerabilities known to be actively exploited in the wild.",
+      "executive_meaning": "A sharper signal of real-world exploitation risk than raw severity counts.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 5,
+      "trend_relevance": 4,
+      "risk_relevance": 5,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "critical_vulnerabilities",
+        "vulnerability_remediation_sla",
+        "internet_facing_critical_vulns"
+      ],
+      "story_tags": [
+        "exposure",
+        "exploitation"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "internet_facing_critical_vulns",
+      "name": "Internet-facing critical vulnerabilities",
+      "category": "vulnerability_exposure",
+      "definition": "Critical vulnerabilities present on assets directly reachable from the internet.",
+      "executive_meaning": "Combines severity with external exposure, raising the likelihood of exploitation.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 5,
+      "trend_relevance": 4,
+      "risk_relevance": 5,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "critical_vulnerabilities",
+        "kev_count",
+        "internet_facing_asset_count"
+      ],
+      "story_tags": [
+        "exposure",
+        "attack_surface"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "vulnerability_remediation_sla",
+      "name": "Vulnerability remediation SLA compliance",
+      "category": "vulnerability_exposure",
+      "definition": "Proportion of vulnerabilities remediated within the agreed SLA.",
+      "executive_meaning": "Indicates whether exposure is being closed at the pace the organisation has committed to.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 4,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "critical_vulnerabilities",
+        "mean_time_to_remediate",
+        "critical_vuln_backlog"
+      ],
+      "story_tags": [
+        "remediation",
+        "discipline"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "mean_time_to_remediate",
+      "name": "Mean time to remediate",
+      "category": "vulnerability_exposure",
+      "definition": "Average elapsed time to remediate a vulnerability from detection.",
+      "executive_meaning": "Reflects remediation throughput and the ability to reduce exposure over time.",
+      "unit": "days",
+      "data_type": "duration",
+      "directionality": "lower_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 4,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "vulnerability_remediation_sla",
+        "vuln_backlog_ageing"
+      ],
+      "story_tags": [
+        "remediation",
+        "throughput"
+      ],
+      "caveats": [
+        "Durations depend on consistent start/stop definitions across the periods being compared."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "critical_vuln_backlog",
+      "name": "Critical vulnerability remediation backlog",
+      "category": "vulnerability_exposure",
+      "definition": "Number of critical vulnerabilities past their remediation due date.",
+      "executive_meaning": "Indicates unresolved high-severity exposure that has breached committed timelines.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 4,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "vulnerability_remediation_sla",
+        "security_headcount",
+        "mean_time_to_remediate"
+      ],
+      "story_tags": [
+        "backlog",
+        "remediation"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "vuln_backlog_ageing",
+      "name": "Vulnerability backlog ageing",
+      "category": "vulnerability_exposure",
+      "definition": "Average age of open vulnerabilities in the backlog.",
+      "executive_meaning": "Indicates whether exposure is accumulating or being actively worked down.",
+      "unit": "days",
+      "data_type": "duration",
+      "directionality": "lower_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 4,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "mean_time_to_remediate",
+        "critical_vuln_backlog"
+      ],
+      "story_tags": [
+        "backlog",
+        "ageing"
+      ],
+      "caveats": [
+        "Durations depend on consistent start/stop definitions across the periods being compared."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "attack_surface_exposure_score",
+      "name": "External attack-surface exposure score",
+      "category": "vulnerability_exposure",
+      "definition": "Composite score representing external attack-surface exposure.",
+      "executive_meaning": "Summarises how much externally reachable, potentially exploitable surface exists.",
+      "unit": "score",
+      "data_type": "score",
+      "directionality": "lower_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "radar",
+        "line"
+      ],
+      "related_metrics": [
+        "internet_facing_asset_count",
+        "internet_facing_critical_vulns"
+      ],
+      "story_tags": [
+        "attack_surface",
+        "exposure"
+      ],
+      "caveats": [
+        "Scores are only meaningful against their own defined scale and methodology.",
+        "Scores are methodology-dependent; compare against your own baseline only."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "critical_patch_compliance",
+      "name": "Critical patch compliance",
+      "category": "patch_configuration",
+      "definition": "Proportion of assets patched for critical vulnerabilities within policy windows.",
+      "executive_meaning": "Indicates hygiene discipline against the highest-risk software flaws.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 4,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "endpoint_patch_compliance",
+        "server_patch_compliance",
+        "critical_vulnerabilities"
+      ],
+      "story_tags": [
+        "patching",
+        "hygiene"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "high_risk_patch_compliance",
+      "name": "High-risk patch compliance",
+      "category": "patch_configuration",
+      "definition": "Proportion of assets patched for high-risk vulnerabilities within policy windows.",
+      "executive_meaning": "Indicates breadth of patch discipline beyond the most critical flaws.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 4,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "critical_patch_compliance",
+        "secure_config_compliance"
+      ],
+      "story_tags": [
+        "patching",
+        "hygiene"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "endpoint_patch_compliance",
+      "name": "Endpoint patch compliance",
+      "category": "patch_configuration",
+      "definition": "Proportion of endpoints meeting patch policy.",
+      "executive_meaning": "Indicates endpoint hygiene and the effectiveness of patch management.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 4,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "edr_coverage",
+        "critical_patch_compliance"
+      ],
+      "story_tags": [
+        "patching",
+        "endpoint"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "server_patch_compliance",
+      "name": "Server patch compliance",
+      "category": "patch_configuration",
+      "definition": "Proportion of servers meeting patch policy.",
+      "executive_meaning": "Indicates server estate hygiene, where exploitation can be highly impactful.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 4,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "critical_patch_compliance",
+        "eol_asset_count"
+      ],
+      "story_tags": [
+        "patching",
+        "server"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "network_patch_compliance",
+      "name": "Network-device patch compliance",
+      "category": "patch_configuration",
+      "definition": "Proportion of network devices meeting patch policy.",
+      "executive_meaning": "Indicates perimeter and network-device hygiene.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 4,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "network_segmentation_coverage",
+        "critical_patch_compliance"
+      ],
+      "story_tags": [
+        "patching",
+        "network"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "secure_config_compliance",
+      "name": "Secure-configuration compliance",
+      "category": "patch_configuration",
+      "definition": "Proportion of assets meeting the agreed secure configuration baseline.",
+      "executive_meaning": "Indicates resilience against misconfiguration-driven exposure.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "cis_benchmark_compliance",
+        "config_drift_rate"
+      ],
+      "story_tags": [
+        "configuration",
+        "hygiene"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "cis_benchmark_compliance",
+      "name": "CIS benchmark compliance",
+      "category": "patch_configuration",
+      "definition": "Proportion of assets compliant with the applicable CIS benchmark.",
+      "executive_meaning": "Provides a comparable configuration-hygiene signal against a recognised baseline.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "secure_config_compliance",
+        "config_drift_rate"
+      ],
+      "story_tags": [
+        "configuration",
+        "benchmark"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology.",
+        "A CIS benchmark is a configuration baseline, not a certification of security."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "eol_asset_count",
+      "name": "Unsupported / end-of-life asset count",
+      "category": "patch_configuration",
+      "definition": "Number of assets running unsupported or end-of-life software.",
+      "executive_meaning": "Indicates structural exposure that cannot be fully patched.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "server_patch_compliance",
+        "critical_vulnerabilities"
+      ],
+      "story_tags": [
+        "exposure",
+        "obsolescence"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "config_drift_rate",
+      "name": "Configuration drift rate",
+      "category": "patch_configuration",
+      "definition": "Proportion of assets that have drifted from the approved baseline.",
+      "executive_meaning": "Signals the durability of configuration controls over time.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "lower_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 4,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "secure_config_compliance",
+        "cis_benchmark_compliance"
+      ],
+      "story_tags": [
+        "configuration",
+        "drift"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "unauthorised_software_rate",
+      "name": "Unauthorised software rate",
+      "category": "patch_configuration",
+      "definition": "Proportion of assets running unauthorised software.",
+      "executive_meaning": "Indicates control over the software supply within the estate.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "lower_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "secure_config_compliance",
+        "endpoint_policy_compliance"
+      ],
+      "story_tags": [
+        "configuration",
+        "software"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "mfa_coverage",
+      "name": "MFA coverage",
+      "category": "identity_access",
+      "definition": "Proportion of relevant accounts protected by multi-factor authentication.",
+      "executive_meaning": "Indicates the breadth of a foundational control that blunts credential-based attacks.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 5,
+      "trend_relevance": 4,
+      "risk_relevance": 5,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "privileged_mfa_coverage",
+        "identity_incidents",
+        "account_compromise_incidents"
+      ],
+      "story_tags": [
+        "identity",
+        "authentication"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "privileged_mfa_coverage",
+      "name": "Privileged-account MFA coverage",
+      "category": "identity_access",
+      "definition": "Proportion of privileged accounts protected by multi-factor authentication.",
+      "executive_meaning": "Signals protection of the accounts that could cause the greatest harm if compromised.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 5,
+      "trend_relevance": 4,
+      "risk_relevance": 5,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "mfa_coverage",
+        "privileged_access_violations",
+        "excessive_privilege_findings"
+      ],
+      "story_tags": [
+        "identity",
+        "privileged_access"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "passwordless_coverage",
+      "name": "Passwordless authentication coverage",
+      "category": "identity_access",
+      "definition": "Proportion of authentication enabled through passwordless methods.",
+      "executive_meaning": "Indicates modernisation of identity assurance and reduction of credential risk.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "mfa_coverage",
+        "account_compromise_incidents"
+      ],
+      "story_tags": [
+        "identity",
+        "modernisation"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "privileged_account_count",
+      "name": "Privileged account count",
+      "category": "identity_access",
+      "definition": "Number of privileged accounts in the environment.",
+      "executive_meaning": "Indicates the size of the high-impact attack surface through privileged access.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "excessive_privilege_findings",
+        "privileged_access_review_completion"
+      ],
+      "story_tags": [
+        "identity",
+        "privileged_access"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "dormant_account_count",
+      "name": "Dormant-account count",
+      "category": "identity_access",
+      "definition": "Number of active accounts with no recent legitimate use.",
+      "executive_meaning": "Signals latent access that could be abused with reduced detection.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "jml_sla_compliance",
+        "privileged_account_count"
+      ],
+      "story_tags": [
+        "identity",
+        "hygiene"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "excessive_privilege_findings",
+      "name": "Excessive-privilege findings",
+      "category": "identity_access",
+      "definition": "Number of findings where accounts hold more access than required.",
+      "executive_meaning": "Indicates least-privilege discipline and potential blast radius.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "privileged_access_review_completion",
+        "privileged_account_count"
+      ],
+      "story_tags": [
+        "identity",
+        "privileged_access"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "privileged_access_review_completion",
+      "name": "Privileged-access review completion",
+      "category": "identity_access",
+      "definition": "Proportion of scheduled privileged-access reviews completed on time.",
+      "executive_meaning": "Indicates governance rigour over the most sensitive access.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "excessive_privilege_findings",
+        "privileged_account_count"
+      ],
+      "story_tags": [
+        "identity",
+        "governance"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "jml_sla_compliance",
+      "name": "Joiner-mover-leaver SLA compliance",
+      "category": "identity_access",
+      "definition": "Proportion of joiner/mover/leaver access changes completed within SLA.",
+      "executive_meaning": "Indicates control over access lifecycle and reduction of orphaned access.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "dormant_account_count",
+        "excessive_privilege_findings"
+      ],
+      "story_tags": [
+        "identity",
+        "lifecycle"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "identity_incidents",
+      "name": "Identity-related incidents",
+      "category": "identity_access",
+      "definition": "Confirmed incidents attributable to identity or access weaknesses.",
+      "executive_meaning": "Reflects the real-world effectiveness of identity controls.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "mfa_coverage",
+        "account_compromise_incidents",
+        "privileged_access_violations"
+      ],
+      "story_tags": [
+        "identity",
+        "incidents"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "privileged_access_violations",
+      "name": "Privileged-access violations",
+      "category": "identity_access",
+      "definition": "Number of confirmed violations of privileged-access policy.",
+      "executive_meaning": "Signals governance gaps and misuse risk in high-impact access.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "privileged_mfa_coverage",
+        "excessive_privilege_findings"
+      ],
+      "story_tags": [
+        "identity",
+        "privileged_access"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "edr_coverage",
+      "name": "EDR coverage",
+      "category": "endpoint_network_cloud",
+      "definition": "Proportion of endpoints covered by active endpoint detection and response.",
+      "executive_meaning": "Indicates the breadth of endpoint visibility and response capability.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 5,
+      "trend_relevance": 4,
+      "risk_relevance": 5,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "detection_coverage",
+        "endpoint_policy_compliance",
+        "mttd"
+      ],
+      "story_tags": [
+        "endpoint",
+        "coverage"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "endpoint_policy_compliance",
+      "name": "Endpoint security-policy compliance",
+      "category": "endpoint_network_cloud",
+      "definition": "Proportion of endpoints compliant with the endpoint security policy.",
+      "executive_meaning": "Indicates endpoint configuration discipline.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "edr_coverage",
+        "endpoint_encryption_coverage"
+      ],
+      "story_tags": [
+        "endpoint",
+        "hygiene"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "endpoint_encryption_coverage",
+      "name": "Endpoint encryption coverage",
+      "category": "endpoint_network_cloud",
+      "definition": "Proportion of endpoints with full-disk encryption enabled.",
+      "executive_meaning": "Reduces data-loss impact from lost or stolen devices.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "endpoint_policy_compliance",
+        "sensitive_data_encryption_coverage"
+      ],
+      "story_tags": [
+        "endpoint",
+        "data_protection"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "mdm_coverage",
+      "name": "Mobile-device management coverage",
+      "category": "endpoint_network_cloud",
+      "definition": "Proportion of mobile devices under management.",
+      "executive_meaning": "Indicates control over mobile endpoints and their data.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "endpoint_policy_compliance",
+        "endpoint_encryption_coverage"
+      ],
+      "story_tags": [
+        "endpoint",
+        "mobile"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "network_segmentation_coverage",
+      "name": "Network segmentation coverage",
+      "category": "endpoint_network_cloud",
+      "definition": "Proportion of the environment subject to effective network segmentation.",
+      "executive_meaning": "Indicates containment potential and limits lateral movement.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "zero_trust_coverage",
+        "ransomware_incidents"
+      ],
+      "story_tags": [
+        "network",
+        "containment"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "zero_trust_coverage",
+      "name": "Zero-trust control coverage",
+      "category": "endpoint_network_cloud",
+      "definition": "Proportion of the environment covered by zero-trust access controls.",
+      "executive_meaning": "Indicates architectural maturity in limiting implicit trust.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "network_segmentation_coverage",
+        "mfa_coverage"
+      ],
+      "story_tags": [
+        "architecture",
+        "modernisation"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "secure_web_gateway_coverage",
+      "name": "Secure web-gateway coverage",
+      "category": "endpoint_network_cloud",
+      "definition": "Proportion of users or traffic protected by a secure web gateway.",
+      "executive_meaning": "Indicates control over web-borne threats.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "endpoint_policy_compliance",
+        "phishing_incidents"
+      ],
+      "story_tags": [
+        "network",
+        "web"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "cloud_workload_security_coverage",
+      "name": "Cloud workload security coverage",
+      "category": "endpoint_network_cloud",
+      "definition": "Proportion of cloud workloads covered by security controls.",
+      "executive_meaning": "Indicates visibility and protection across cloud environments.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "cloud_config_compliance",
+        "detection_coverage"
+      ],
+      "story_tags": [
+        "cloud",
+        "coverage"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "cloud_config_compliance",
+      "name": "Cloud configuration compliance",
+      "category": "endpoint_network_cloud",
+      "definition": "Proportion of cloud resources compliant with the secure baseline.",
+      "executive_meaning": "Indicates resilience against cloud misconfiguration exposure.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "cloud_workload_security_coverage",
+        "secure_config_compliance"
+      ],
+      "story_tags": [
+        "cloud",
+        "configuration"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "internet_facing_asset_count",
+      "name": "Internet-facing asset count",
+      "category": "endpoint_network_cloud",
+      "definition": "Number of assets directly reachable from the internet.",
+      "executive_meaning": "Indicates the size of the externally exposed attack surface.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "context_dependent",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "internet_facing_critical_vulns",
+        "attack_surface_exposure_score"
+      ],
+      "story_tags": [
+        "attack_surface",
+        "exposure"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment.",
+        "Interpretation is context-dependent; a change is not automatically good or bad."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "sensitive_data_discovery_coverage",
+      "name": "Sensitive-data discovery coverage",
+      "category": "data_privacy",
+      "definition": "Proportion of the data estate scanned for sensitive-data discovery.",
+      "executive_meaning": "Indicates whether the organisation knows where its sensitive data resides.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "sensitive_data_encryption_coverage",
+        "dlp_coverage"
+      ],
+      "story_tags": [
+        "data",
+        "discovery"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "sensitive_data_encryption_coverage",
+      "name": "Sensitive-data encryption coverage",
+      "category": "data_privacy",
+      "definition": "Proportion of sensitive data stores with encryption at rest applied.",
+      "executive_meaning": "Reduces impact from data exposure and unauthorised access.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "sensitive_data_discovery_coverage",
+        "endpoint_encryption_coverage"
+      ],
+      "story_tags": [
+        "data",
+        "data_protection"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "dlp_coverage",
+      "name": "Data-loss-prevention coverage",
+      "category": "data_privacy",
+      "definition": "Proportion of relevant channels covered by data-loss-prevention controls.",
+      "executive_meaning": "Indicates control over data egress across key channels.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "dlp_incidents",
+        "sensitive_data_discovery_coverage"
+      ],
+      "story_tags": [
+        "data",
+        "dlp"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "dlp_incidents",
+      "name": "Data-loss-prevention incidents",
+      "category": "data_privacy",
+      "definition": "Number of data-loss-prevention incidents recorded.",
+      "executive_meaning": "Indicates the volume of policy-relevant data movement attempts.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "dlp_coverage",
+        "data_breach_incidents"
+      ],
+      "story_tags": [
+        "data",
+        "dlp"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "data_access_anomalies",
+      "name": "Data-access anomalies",
+      "category": "data_privacy",
+      "definition": "Number of anomalous data-access events detected.",
+      "executive_meaning": "Signals potential insider-risk or compromised-account behaviour.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "excessive_data_access_privileges",
+        "insider_incidents"
+      ],
+      "story_tags": [
+        "data",
+        "anomaly"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "excessive_data_access_privileges",
+      "name": "Excessive data-access privileges",
+      "category": "data_privacy",
+      "definition": "Number of findings where data access exceeds business need.",
+      "executive_meaning": "Indicates least-privilege discipline over sensitive data.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "data_access_anomalies",
+        "excessive_privilege_findings"
+      ],
+      "story_tags": [
+        "data",
+        "privileged_access"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "data_breach_incidents",
+      "name": "Data-breach incidents",
+      "category": "data_privacy",
+      "definition": "Number of confirmed data-breach incidents involving personal or sensitive data.",
+      "executive_meaning": "Board-critical due to regulatory, financial and reputational consequences.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 5,
+      "trend_relevance": 3,
+      "risk_relevance": 5,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "records_affected",
+        "material_security_incidents",
+        "dlp_incidents"
+      ],
+      "story_tags": [
+        "data",
+        "breach"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "records_affected",
+      "name": "Records affected by security incidents",
+      "category": "data_privacy",
+      "definition": "Number of data records affected by security incidents in the period.",
+      "executive_meaning": "Quantifies the scale of data impact behind incident counts.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 5,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "data_breach_incidents",
+        "material_security_incidents"
+      ],
+      "story_tags": [
+        "data",
+        "impact"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "backup_coverage_critical_data",
+      "name": "Backup coverage for critical data",
+      "category": "data_privacy",
+      "definition": "Proportion of critical data covered by the backup regime.",
+      "executive_meaning": "Indicates the recoverability of the organisation's most important data.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "recovery_test_success_critical_data",
+        "backup_success_rate"
+      ],
+      "story_tags": [
+        "data",
+        "resilience"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "recovery_test_success_critical_data",
+      "name": "Recovery-test success rate for critical data",
+      "category": "data_privacy",
+      "definition": "Proportion of critical-data recovery tests that succeeded.",
+      "executive_meaning": "Provides evidence that critical data can actually be recovered, not just backed up.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "backup_coverage_critical_data",
+        "restore_test_success_rate"
+      ],
+      "story_tags": [
+        "data",
+        "assurance"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "critical_service_availability",
+      "name": "Critical-service availability",
+      "category": "resilience_recovery",
+      "definition": "Availability of defined critical services over the period.",
+      "executive_meaning": "Relates security and resilience directly to business operations.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 5,
+      "trend_relevance": 4,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "cyber_downtime",
+        "dr_readiness",
+        "mttrecover"
+      ],
+      "story_tags": [
+        "resilience",
+        "availability"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "cyber_downtime",
+      "name": "Cyber-related service downtime",
+      "category": "resilience_recovery",
+      "definition": "Total downtime of services attributable to cyber events.",
+      "executive_meaning": "Quantifies realised operational impact from security incidents.",
+      "unit": "hours",
+      "data_type": "duration",
+      "directionality": "lower_is_better",
+      "board_relevance": 5,
+      "trend_relevance": 4,
+      "risk_relevance": 5,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "critical_service_availability",
+        "material_security_incidents",
+        "ransomware_incidents"
+      ],
+      "story_tags": [
+        "resilience",
+        "business_impact"
+      ],
+      "caveats": [
+        "Durations depend on consistent start/stop definitions across the periods being compared."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "rto_compliance",
+      "name": "Recovery Time Objective (RTO) compliance",
+      "category": "resilience_recovery",
+      "definition": "Proportion of critical systems recovered within their Recovery Time Objective.",
+      "executive_meaning": "Indicates whether recovery capability matches business expectations.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 4,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "rpo_compliance",
+        "restore_test_success_rate",
+        "dr_exercise_success_rate"
+      ],
+      "story_tags": [
+        "resilience",
+        "recovery"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "rpo_compliance",
+      "name": "Recovery Point Objective (RPO) compliance",
+      "category": "resilience_recovery",
+      "definition": "Proportion of critical systems meeting their Recovery Point Objective.",
+      "executive_meaning": "Indicates acceptable data-loss tolerance in recovery.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 4,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "rto_compliance",
+        "backup_success_rate"
+      ],
+      "story_tags": [
+        "resilience",
+        "recovery"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "dr_readiness",
+      "name": "Disaster-recovery readiness",
+      "category": "resilience_recovery",
+      "definition": "Assessed readiness of disaster-recovery capability.",
+      "executive_meaning": "Indicates preparedness before a major disruption occurs.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "dr_exercise_success_rate",
+        "critical_service_availability"
+      ],
+      "story_tags": [
+        "resilience",
+        "preparedness"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "dr_exercise_success_rate",
+      "name": "Disaster-recovery exercise success rate",
+      "category": "resilience_recovery",
+      "definition": "Proportion of disaster-recovery exercises that met their objectives.",
+      "executive_meaning": "Provides evidence that recovery plans work in practice.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 4,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "dr_readiness",
+        "restore_test_success_rate",
+        "rto_compliance"
+      ],
+      "story_tags": [
+        "resilience",
+        "assurance"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "backup_success_rate",
+      "name": "Backup success rate",
+      "category": "resilience_recovery",
+      "definition": "Proportion of scheduled backups that completed successfully.",
+      "executive_meaning": "Indicates the reliability of the recovery foundation.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 4,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "restore_test_success_rate",
+        "immutable_backup_coverage"
+      ],
+      "story_tags": [
+        "resilience",
+        "backup"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "immutable_backup_coverage",
+      "name": "Immutable backup coverage",
+      "category": "resilience_recovery",
+      "definition": "Proportion of backups stored in immutable form.",
+      "executive_meaning": "Indicates ransomware resilience of the backup estate.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 5,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "ransomware_incidents",
+        "backup_success_rate",
+        "restore_test_success_rate"
+      ],
+      "story_tags": [
+        "resilience",
+        "ransomware"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "restore_test_success_rate",
+      "name": "Restore-test success rate",
+      "category": "resilience_recovery",
+      "definition": "Proportion of restore tests that successfully recovered data or systems.",
+      "executive_meaning": "Demonstrates that recovery is proven, not merely planned.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 5,
+      "trend_relevance": 4,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "backup_success_rate",
+        "dr_exercise_success_rate",
+        "rto_compliance"
+      ],
+      "story_tags": [
+        "resilience",
+        "assurance"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "bcp_exercise_completion",
+      "name": "Business-continuity exercise completion",
+      "category": "resilience_recovery",
+      "definition": "Proportion of planned business-continuity exercises completed.",
+      "executive_meaning": "Indicates operational discipline in validating continuity arrangements.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "dr_exercise_success_rate",
+        "critical_service_availability"
+      ],
+      "story_tags": [
+        "resilience",
+        "assurance"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "awareness_completion",
+      "name": "Security-awareness completion rate",
+      "category": "human_risk",
+      "definition": "Proportion of staff who completed required security-awareness training.",
+      "executive_meaning": "Indicates training compliance; not, by itself, behavioural effectiveness.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "phishing_failure_rate",
+        "training_exception_rate",
+        "policy_acknowledgement_rate"
+      ],
+      "story_tags": [
+        "human_risk",
+        "training"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "phishing_failure_rate",
+      "name": "Phishing-simulation failure rate",
+      "category": "human_risk",
+      "definition": "Proportion of recipients who fail phishing simulations.",
+      "executive_meaning": "A behavioural signal of human-risk exposure, distinct from training completion.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "lower_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 4,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "awareness_completion",
+        "repeat_phishing_failure_rate",
+        "phishing_incidents"
+      ],
+      "story_tags": [
+        "human_risk",
+        "phishing"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "repeat_phishing_failure_rate",
+      "name": "Repeat phishing-failure rate",
+      "category": "human_risk",
+      "definition": "Proportion of users who repeatedly fail phishing simulations.",
+      "executive_meaning": "Indicates concentrated, persistent human-risk exposure.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "lower_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "phishing_failure_rate",
+        "high_risk_user_population"
+      ],
+      "story_tags": [
+        "human_risk",
+        "phishing"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "training_hours_per_employee",
+      "name": "Security-training hours per employee",
+      "category": "human_risk",
+      "definition": "Average security-training hours delivered per employee.",
+      "executive_meaning": "Indicates investment in security awareness, not directly its effectiveness.",
+      "unit": "per_employee",
+      "data_type": "duration",
+      "directionality": "higher_is_better",
+      "board_relevance": 2,
+      "trend_relevance": 3,
+      "risk_relevance": 2,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "awareness_completion",
+        "security_culture_score"
+      ],
+      "story_tags": [
+        "human_risk",
+        "training"
+      ],
+      "caveats": [
+        "Durations depend on consistent start/stop definitions across the periods being compared."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "policy_acknowledgement_rate",
+      "name": "Security-policy acknowledgement rate",
+      "category": "human_risk",
+      "definition": "Proportion of staff who have acknowledged current security policies.",
+      "executive_meaning": "Indicates policy adoption and basic governance coverage.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 2,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "awareness_completion",
+        "policy_exceptions"
+      ],
+      "story_tags": [
+        "human_risk",
+        "governance"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "security_reporting_rate",
+      "name": "Security-reporting rate by employees",
+      "category": "human_risk",
+      "definition": "Rate at which employees report suspected security events.",
+      "executive_meaning": "A positive engagement signal; higher reporting can improve detection.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "awareness_completion",
+        "phishing_incidents",
+        "mttd"
+      ],
+      "story_tags": [
+        "human_risk",
+        "culture"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "human_incidents",
+      "name": "Human-related security incidents",
+      "category": "human_risk",
+      "definition": "Confirmed incidents with a significant human-factor contributor.",
+      "executive_meaning": "Indicates realised human-risk impact.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "phishing_failure_rate",
+        "awareness_completion"
+      ],
+      "story_tags": [
+        "human_risk",
+        "incidents"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "high_risk_user_population",
+      "name": "High-risk user population",
+      "category": "human_risk",
+      "definition": "Number of users identified as high-risk based on behaviour or role.",
+      "executive_meaning": "Indicates the size of the population most exposed to social engineering.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "repeat_phishing_failure_rate",
+        "phishing_failure_rate"
+      ],
+      "story_tags": [
+        "human_risk",
+        "population"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "security_culture_score",
+      "name": "Security-culture survey score",
+      "category": "human_risk",
+      "definition": "Composite score from security-culture surveys.",
+      "executive_meaning": "Indicates staff attitudes and engagement with security beyond compliance.",
+      "unit": "score",
+      "data_type": "score",
+      "directionality": "higher_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "radar",
+        "line"
+      ],
+      "related_metrics": [
+        "awareness_completion",
+        "security_reporting_rate"
+      ],
+      "story_tags": [
+        "human_risk",
+        "culture"
+      ],
+      "caveats": [
+        "Scores are only meaningful against their own defined scale and methodology.",
+        "Survey scores depend on instrument design and are not directly comparable across organisations."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "training_exception_rate",
+      "name": "Security-training exception rate",
+      "category": "human_risk",
+      "definition": "Proportion of staff with unapproved exceptions to required training.",
+      "executive_meaning": "Indicates gaps in baseline security awareness coverage.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "lower_is_better",
+      "board_relevance": 2,
+      "trend_relevance": 3,
+      "risk_relevance": 2,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "awareness_completion",
+        "policy_exceptions"
+      ],
+      "story_tags": [
+        "human_risk",
+        "training"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "residual_risk_score",
+      "name": "Residual cyber-risk score",
+      "category": "governance_risk_assurance",
+      "definition": "Aggregate residual cyber-risk score after controls.",
+      "executive_meaning": "Provides a consolidated view of risk remaining after mitigation, against the organisation's own methodology.",
+      "unit": "score",
+      "data_type": "score",
+      "directionality": "lower_is_better",
+      "board_relevance": 5,
+      "trend_relevance": 4,
+      "risk_relevance": 5,
+      "recommended_visualizations": [
+        "kpi",
+        "radar",
+        "line"
+      ],
+      "related_metrics": [
+        "inherent_risk_score",
+        "risk_appetite_breaches",
+        "control_testing_pass_rate"
+      ],
+      "story_tags": [
+        "risk",
+        "governance"
+      ],
+      "caveats": [
+        "Scores are only meaningful against their own defined scale and methodology.",
+        "Risk scores are methodology-dependent; compare only against your own baseline and scale."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "inherent_risk_score",
+      "name": "Inherent cyber-risk score",
+      "category": "governance_risk_assurance",
+      "definition": "Aggregate inherent cyber-risk score before controls.",
+      "executive_meaning": "Indicates the underlying risk profile independent of control effectiveness.",
+      "unit": "score",
+      "data_type": "score",
+      "directionality": "lower_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "radar",
+        "line"
+      ],
+      "related_metrics": [
+        "residual_risk_score",
+        "risk_appetite_breaches"
+      ],
+      "story_tags": [
+        "risk",
+        "governance"
+      ],
+      "caveats": [
+        "Scores are only meaningful against their own defined scale and methodology.",
+        "Risk scores are methodology-dependent; compare only against your own baseline and scale."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "risk_appetite_breaches",
+      "name": "Risk-appetite breach count",
+      "category": "governance_risk_assurance",
+      "definition": "Number of breaches of the Board-approved risk appetite.",
+      "executive_meaning": "A direct governance signal that tolerance thresholds have been exceeded.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "residual_risk_score",
+        "open_high_risk_findings"
+      ],
+      "story_tags": [
+        "risk",
+        "appetite"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "open_high_risk_findings",
+      "name": "Open high-risk findings",
+      "category": "governance_risk_assurance",
+      "definition": "Number of open findings rated high risk.",
+      "executive_meaning": "Indicates unresolved material control weaknesses.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 4,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "overdue_audit_findings",
+        "control_testing_pass_rate",
+        "risk_appetite_breaches"
+      ],
+      "story_tags": [
+        "findings",
+        "risk"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "overdue_audit_findings",
+      "name": "Overdue audit findings",
+      "category": "governance_risk_assurance",
+      "definition": "Number of audit findings past their agreed remediation date.",
+      "executive_meaning": "Signals the pace at which assurance issues are being closed.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 4,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "open_high_risk_findings",
+        "regulatory_findings"
+      ],
+      "story_tags": [
+        "audit",
+        "assurance"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "regulatory_findings",
+      "name": "Regulatory findings",
+      "category": "governance_risk_assurance",
+      "definition": "Number of findings raised by regulators or supervisory authorities.",
+      "executive_meaning": "Indicates external compliance and supervisory exposure.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 5,
+      "trend_relevance": 3,
+      "risk_relevance": 5,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "overdue_audit_findings",
+        "assurance_coverage"
+      ],
+      "story_tags": [
+        "regulatory",
+        "compliance"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "policy_exceptions",
+      "name": "Security-policy exception count",
+      "category": "governance_risk_assurance",
+      "definition": "Number of approved exceptions to security policy.",
+      "executive_meaning": "Indicates the volume of accepted deviations from the control baseline.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "risk_acceptance_count",
+        "open_high_risk_findings"
+      ],
+      "story_tags": [
+        "governance",
+        "exceptions"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "risk_acceptance_count",
+      "name": "Risk-acceptance count",
+      "category": "governance_risk_assurance",
+      "definition": "Number of formal risk acceptances recorded.",
+      "executive_meaning": "Indicates the volume of risks consciously retained rather than treated.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "policy_exceptions",
+        "residual_risk_score"
+      ],
+      "story_tags": [
+        "governance",
+        "risk"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "control_testing_pass_rate",
+      "name": "Control-testing pass rate",
+      "category": "governance_risk_assurance",
+      "definition": "Proportion of tested controls that passed.",
+      "executive_meaning": "A core assurance signal of whether controls are operating effectively.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 5,
+      "trend_relevance": 4,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "audit_findings",
+        "assurance_coverage",
+        "residual_risk_score"
+      ],
+      "story_tags": [
+        "assurance",
+        "controls"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "assurance_coverage",
+      "name": "Security-assurance coverage",
+      "category": "governance_risk_assurance",
+      "definition": "Proportion of the control environment covered by independent assurance.",
+      "executive_meaning": "Indicates how much of the control environment has been independently validated.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "control_testing_pass_rate",
+        "regulatory_findings"
+      ],
+      "story_tags": [
+        "assurance",
+        "coverage"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "critical_suppliers_assessed",
+      "name": "Critical suppliers assessed",
+      "category": "third_party",
+      "definition": "Number of critical suppliers that have undergone security assessment.",
+      "executive_meaning": "Indicates the volume of supply-chain due diligence completed.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "higher_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "supplier_assessment_coverage",
+        "supplier_high_risk_findings"
+      ],
+      "story_tags": [
+        "third_party",
+        "assessment"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "supplier_assessment_coverage",
+      "name": "Critical supplier assessment coverage",
+      "category": "third_party",
+      "definition": "Proportion of critical suppliers with a current security assessment.",
+      "executive_meaning": "Indicates breadth of visibility into supply-chain risk.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "critical_suppliers_assessed",
+        "thirdparty_security_incidents"
+      ],
+      "story_tags": [
+        "third_party",
+        "assessment"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "supplier_high_risk_findings",
+      "name": "Critical supplier high-risk findings",
+      "category": "third_party",
+      "definition": "Number of high-risk findings raised against critical suppliers.",
+      "executive_meaning": "Indicates concentrated, material risk embedded in the supply chain.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 5,
+      "trend_relevance": 3,
+      "risk_relevance": 5,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "supplier_concentration_risk",
+        "supplier_remediation_sla",
+        "thirdparty_security_incidents"
+      ],
+      "story_tags": [
+        "third_party",
+        "risk"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "thirdparty_security_incidents",
+      "name": "Third-party security incidents",
+      "category": "third_party",
+      "definition": "Security incidents originating from, or involving, third-party suppliers or partners.",
+      "executive_meaning": "Highlights supply-chain risk exposure outside direct operational control.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 5,
+      "trend_relevance": 3,
+      "risk_relevance": 5,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "supplier_concentration_risk",
+        "supplier_high_risk_findings",
+        "thirdparty_access_accounts"
+      ],
+      "story_tags": [
+        "third_party",
+        "supply_chain"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "supplier_remediation_sla",
+      "name": "Supplier remediation SLA compliance",
+      "category": "third_party",
+      "definition": "Proportion of supplier findings remediated within the agreed SLA.",
+      "executive_meaning": "Indicates whether supply-chain risk is actually being reduced.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "supplier_high_risk_findings",
+        "thirdparty_security_incidents"
+      ],
+      "story_tags": [
+        "third_party",
+        "remediation"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "suppliers_with_cyber_clauses",
+      "name": "Suppliers with contractual cyber requirements",
+      "category": "third_party",
+      "definition": "Number of suppliers bound by contractual security requirements.",
+      "executive_meaning": "Indicates the contractual foundation for supply-chain assurance.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "higher_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 2,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "supplier_assessment_coverage",
+        "thirdparty_access_accounts"
+      ],
+      "story_tags": [
+        "third_party",
+        "contract"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "supplier_concentration_risk",
+      "name": "Concentration risk in critical suppliers",
+      "category": "third_party",
+      "definition": "Score representing dependence on a small number of critical suppliers.",
+      "executive_meaning": "Indicates systemic exposure if a key supplier fails or is compromised.",
+      "unit": "score",
+      "data_type": "score",
+      "directionality": "lower_is_better",
+      "board_relevance": 5,
+      "trend_relevance": 3,
+      "risk_relevance": 5,
+      "recommended_visualizations": [
+        "kpi",
+        "radar",
+        "line"
+      ],
+      "related_metrics": [
+        "supplier_high_risk_findings",
+        "thirdparty_security_incidents"
+      ],
+      "story_tags": [
+        "third_party",
+        "concentration"
+      ],
+      "caveats": [
+        "Scores are only meaningful against their own defined scale and methodology.",
+        "Concentration scores are methodology-dependent; compare against your own baseline only."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "fourth_party_visibility",
+      "name": "Fourth-party / dependency visibility",
+      "category": "third_party",
+      "definition": "Proportion of critical supplier dependencies that are known and assessed.",
+      "executive_meaning": "Indicates visibility into sub-supplier and dependency risk.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 2,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "supplier_assessment_coverage"
+      ],
+      "story_tags": [
+        "third_party",
+        "dependency"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "thirdparty_access_accounts",
+      "name": "Third-party access accounts",
+      "category": "third_party",
+      "definition": "Number of accounts granted to third parties for access.",
+      "executive_meaning": "Indicates external access surface that must be governed.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "context_dependent",
+      "board_relevance": 3,
+      "trend_relevance": 2,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "suppliers_with_cyber_clauses",
+        "privileged_account_count"
+      ],
+      "story_tags": [
+        "third_party",
+        "access"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment.",
+        "Interpretation is context-dependent; a change is not automatically good or bad."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "supplier_bcp_test_coverage",
+      "name": "Supplier business-continuity test coverage",
+      "category": "third_party",
+      "definition": "Proportion of critical suppliers that have demonstrated business-continuity testing.",
+      "executive_meaning": "Indicates confidence in supplier resilience.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 2,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "supplier_assessment_coverage",
+        "dr_exercise_success_rate"
+      ],
+      "story_tags": [
+        "third_party",
+        "resilience"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "cyber_budget",
+      "name": "Cybersecurity budget",
+      "category": "strategy_investment",
+      "definition": "Total cybersecurity budget for the period.",
+      "executive_meaning": "Context for interpreting investment against outcomes; not intrinsically good or bad.",
+      "unit": "currency",
+      "data_type": "currency",
+      "directionality": "context_dependent",
+      "board_relevance": 4,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "waterfall"
+      ],
+      "related_metrics": [
+        "budget_variance",
+        "security_spend_pct_it",
+        "programme_completion_rate"
+      ],
+      "story_tags": [
+        "investment",
+        "strategy"
+      ],
+      "caveats": [
+        "Values depend on budget scope, currency and accounting treatment; compare like-for-like.",
+        "Interpretation is context-dependent; a change is not automatically good or bad.",
+        "Interpret against outcomes, risk and strategy; a larger budget is not automatically better."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "budget_variance",
+      "name": "Cybersecurity budget variance",
+      "category": "strategy_investment",
+      "definition": "Variance between planned and actual cybersecurity spend.",
+      "executive_meaning": "Indicates financial execution and predictability of the programme.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "context_dependent",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "cyber_budget",
+        "programme_completion_rate"
+      ],
+      "story_tags": [
+        "investment",
+        "finance"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology.",
+        "Interpretation is context-dependent; a change is not automatically good or bad."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "security_spend_pct_it",
+      "name": "Security spend as percentage of IT spend",
+      "category": "strategy_investment",
+      "definition": "Cybersecurity spend expressed as a percentage of total IT spend.",
+      "executive_meaning": "A structural investment indicator, not a target in itself.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "context_dependent",
+      "board_relevance": 3,
+      "trend_relevance": 2,
+      "risk_relevance": 2,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "cyber_budget",
+        "security_spend_per_employee"
+      ],
+      "story_tags": [
+        "investment",
+        "finance"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology.",
+        "Interpretation is context-dependent; a change is not automatically good or bad."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "security_spend_per_employee",
+      "name": "Security spend per employee",
+      "category": "strategy_investment",
+      "definition": "Cybersecurity spend normalised per employee.",
+      "executive_meaning": "Allows size-normalised comparison of security investment.",
+      "unit": "per_employee",
+      "data_type": "currency",
+      "directionality": "context_dependent",
+      "board_relevance": 2,
+      "trend_relevance": 2,
+      "risk_relevance": 2,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "waterfall"
+      ],
+      "related_metrics": [
+        "security_spend_pct_it",
+        "cyber_budget"
+      ],
+      "story_tags": [
+        "investment",
+        "finance"
+      ],
+      "caveats": [
+        "Values depend on budget scope, currency and accounting treatment; compare like-for-like.",
+        "Interpretation is context-dependent; a change is not automatically good or bad."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "programme_completion_rate",
+      "name": "Cybersecurity programme completion rate",
+      "category": "strategy_investment",
+      "definition": "Proportion of the cybersecurity programme delivered against plan.",
+      "executive_meaning": "Indicates execution momentum of the security strategy.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 4,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "initiative_delivery_rate",
+        "cyber_budget"
+      ],
+      "story_tags": [
+        "strategy",
+        "execution"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "initiative_delivery_rate",
+      "name": "Strategic security initiative delivery rate",
+      "category": "strategy_investment",
+      "definition": "Proportion of strategic security initiatives delivered on schedule.",
+      "executive_meaning": "Indicates whether strategic change is keeping pace with intent.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 4,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "programme_completion_rate",
+        "cyber_budget"
+      ],
+      "story_tags": [
+        "strategy",
+        "execution"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology.",
+        "Track delivery against an agreed baseline; a single late initiative may be material by itself."
+      ],
+      "board_essential": true,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "security_headcount",
+      "name": "Cybersecurity staff headcount",
+      "category": "strategy_investment",
+      "definition": "Number of staff dedicated to cybersecurity.",
+      "executive_meaning": "Context for capacity to execute the security programme.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "context_dependent",
+      "board_relevance": 3,
+      "trend_relevance": 2,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "security_vacancies",
+        "critical_vuln_backlog",
+        "security_staff_turnover"
+      ],
+      "story_tags": [
+        "people",
+        "capacity"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment.",
+        "Interpretation is context-dependent; a change is not automatically good or bad."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "security_vacancies",
+      "name": "Cybersecurity vacancies",
+      "category": "strategy_investment",
+      "definition": "Number of open cybersecurity positions.",
+      "executive_meaning": "Indicates capacity risk and potential execution constraints.",
+      "unit": "count",
+      "data_type": "count",
+      "directionality": "lower_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "bar",
+        "line"
+      ],
+      "related_metrics": [
+        "security_headcount",
+        "security_staff_turnover"
+      ],
+      "story_tags": [
+        "people",
+        "capacity"
+      ],
+      "caveats": [
+        "Absolute counts are influenced by detection, reporting maturity and the size of the environment."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "security_staff_turnover",
+      "name": "Cybersecurity staff turnover",
+      "category": "strategy_investment",
+      "definition": "Annualised turnover of cybersecurity staff.",
+      "executive_meaning": "Indicates retention risk and continuity of security capability.",
+      "unit": "percent",
+      "data_type": "percentage",
+      "directionality": "lower_is_better",
+      "board_relevance": 3,
+      "trend_relevance": 3,
+      "risk_relevance": 3,
+      "recommended_visualizations": [
+        "kpi",
+        "line",
+        "bar"
+      ],
+      "related_metrics": [
+        "security_headcount",
+        "security_vacancies"
+      ],
+      "story_tags": [
+        "people",
+        "retention"
+      ],
+      "caveats": [
+        "Percentage figures depend on a consistent measurement universe and methodology."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    },
+    {
+      "metric_key": "cyber_maturity_score",
+      "name": "Cybersecurity capability / maturity score",
+      "category": "strategy_investment",
+      "definition": "Composite maturity score for cybersecurity capability against the organisation's chosen model.",
+      "executive_meaning": "Indicates the overall maturity trajectory of the security programme.",
+      "unit": "score",
+      "data_type": "maturity",
+      "directionality": "higher_is_better",
+      "board_relevance": 4,
+      "trend_relevance": 4,
+      "risk_relevance": 4,
+      "recommended_visualizations": [
+        "kpi",
+        "radar",
+        "line"
+      ],
+      "related_metrics": [
+        "programme_completion_rate",
+        "control_testing_pass_rate"
+      ],
+      "story_tags": [
+        "maturity",
+        "strategy"
+      ],
+      "caveats": [
+        "Maturity scores are methodology-dependent and not directly comparable across frameworks.",
+        "Maturity scores are model-dependent and not directly comparable across frameworks or organisations."
+      ],
+      "board_essential": false,
+      "version": "1.0.0",
+      "active": true
+    }
+  ],
+  "generated_at": "2026-11-07T00:00:00.000Z"
+}
