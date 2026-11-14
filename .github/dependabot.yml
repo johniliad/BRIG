@@ -1,0 +1,44 @@
+# Dependabot configuration for BRIG
+# ---------------------------------------------------------------------------
+# Security updates are handled separately by GitHub (Settings -> Code security).
+# Every advisory raised so far is already fixed on main (17 fixed, 0 open), so
+# this file only governs *scheduled* version-update pull requests.
+#
+# Policy (matches docs/deployment.md section 16.3):
+#   - minor/patch updates: weekly, grouped into two pull requests (runtime, tooling);
+#   - major updates: NOT opened automatically. The available majors are breaking
+#     changes (React 19, Vite 8, Vitest 5, Vite React plugin 6, PptxGenJS 4,
+#     TypeScript 7, @types/react 19). They are upgraded deliberately, with a full
+#     rebuild, the test suite and a deploy smoke test — not by clicking merge.
+#   - dev tooling is not shipped to the browser, but it produces the artifact, so
+#     it is kept current too.
+#
+# To opt into major updates for a specific package, add an exclusion for it to
+# `ignore` (e.g. dependency-name: "react" / update-types: ["version-update:semver-major"]).
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 3
+    versioning-strategy: "increase"
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+    groups:
+      runtime-minor-patch:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+      tooling-minor-patch:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
