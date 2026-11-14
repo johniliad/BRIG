@@ -1,19 +1,23 @@
 {
   "name": "brig-ciso-board-reporting",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "BRIG — CISO Board Reporting Intelligence Generator. Deterministic executive cybersecurity reporting with an optional LLM writing layer.",
   "type": "module",
+  "license": "Apache-2.0",
+  "author": "Dr. John Iliadis <https://www.iliadis.net/>",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "postbuild": "node scripts/postbuild-html.mjs",
+    "postbuild": "node scripts/postbuild-html.mjs && node scripts/render-htaccess.mjs && node scripts/copy-legal-notices.mjs",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "build:library": "node scripts/metric-spec.mjs",
-    "export:seed": "node scripts/export-seed.mjs"
+    "export:seed": "node scripts/export-seed.mjs",
+    "secret:new": "node scripts/new-origin-secret.mjs",
+    "deploy:package": "node scripts/package-deploy.mjs"
   },
   "dependencies": {
     "chart.js": "^4.4.3",

@@ -159,7 +159,8 @@ Optional: ReportFacts -> /api/llm/generate.php (PHP proxy)
 
 The production server needs **Apache + PHP 8.3+ + MySQL** — **no Node.js runtime**.
 
-1. `npm run build` locally to produce `dist/`.
+1. `npm run build` locally to produce `dist/` plus the generated `dist/.htaccess` (it carries the
+   Cloudflare origin secret — see `docs/deployment.md` §15).
 2. Upload the **contents** of `dist/` to the application web root (e.g. `public_html/brig/`).
 3. Upload the `api/` folder and the `data/` folder (JSON copies). Keep the PHP files as-is.
 4. *(Optional DB)* In phpMyAdmin: import `database/schema.sql`, then `database/seed.sql`.
@@ -216,6 +217,17 @@ inferred relationships are analytical signals, not proof of causality.
 - AI output is only accepted after passing schema + numeric fact validation; otherwise the
   deterministic wording is used.
 
+## Licence and third-party notices
+
+BRIG is licensed under the **Apache License 2.0** (see `LICENSE` and `NOTICE`). The built application
+also conveys third-party code under MIT, ISC and Zlib licences (React, Chart.js, PptxGenJS, JSZip, …).
+Their attribution and the full licence texts are in `THIRD-PARTY-NOTICES.md`, which the build deploys as
+`/THIRD-PARTY-NOTICES.txt` together with `/LICENSE.txt`. Both are linked from the app footer and from
+the branded `403`/`404`/`500` pages.
+
+Adding, removing or upgrading a dependency means updating `THIRD-PARTY-NOTICES.md` before the next
+release — see `docs/deployment.md` §16.
+
 ## Scripts reference
 
 | Script | Purpose |
@@ -225,3 +237,5 @@ inferred relationships are analytical signals, not proof of causality.
 | `npm test` | Vitest golden scenarios |
 | `npm run build:library` | Regenerate `src/data/metric-library.json` |
 | `npm run export:seed` | Regenerate `data/*.json` + `database/seed.sql` |
+| `npm run secret:new` | Generate a Cloudflare origin-lock secret |
+| `npm run deploy:package` | Assemble `deploy/` — the exact upload set for Apache (§15–16) |

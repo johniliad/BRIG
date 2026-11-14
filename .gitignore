@@ -3,11 +3,16 @@ node_modules/
 # Build output
 dist/
 dist-ssr/
+# Assembled upload set (npm run deploy:package) — may contain the origin secret
+deploy/
 # Local env / config (never commit secrets)
 .env
 .env.*
 !.env.example
 private-config/
+# Cloudflare origin-lock secret rendered into dist/.htaccess at build time.
+# NEVER commit the value; the repo only stores the placeholder in .htaccess.
+private-config/cf-origin-secret.txt
 # Local private config with real secrets (never commit)
 /brig.php
 # Logs
@@ -34,9 +39,8 @@ ai-access-tokens.txt
 # PHP local runtime bits
 /api/storage/*
 !/api/storage/.gitkeep
-# Vibe coding markdown files
+# Vibe coding markdown files — local only, never published to GitHub
 requirements/
-requirements
 #Development plan in markdown
 CISO_Board_Reporting_Development_Plan.md
 # ==========================================

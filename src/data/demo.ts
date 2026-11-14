@@ -18,7 +18,7 @@ export const BRAND_NAME = 'CISO Board Reporting Intelligence Generator';
 export const HERO_TITLE = 'BRIG — Board Risk & Insights Generator';
 export const DEMO_LABEL = 'Illustrative / fictional data — not a real organisation.';
 /** Bump on deploy-relevant client changes so the footer shows the live build. */
-export const APP_BUILD = '2026-11-08.10';
+export const APP_BUILD = '2026-11-14.1';
 
 export const DEFAULT_PROFILE: BoardProfile = {
   organisationLabel: 'Northwind Federal Bank (illustrative)',

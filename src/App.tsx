@@ -162,6 +162,10 @@ export default function App() {
               <button className="link-btn" onClick={goAbout}>About</button>
               {' · '}
               <button className="link-btn" onClick={() => dispatch({ type: 'RESET' })}>Start over</button>
+              {' · '}
+              <a className="link-btn" href="/THIRD-PARTY-NOTICES.txt">Third-party notices</a>
+              {' · '}
+              <a className="link-btn" href="/LICENSE.txt">License</a>
             </p>
           </div>
 

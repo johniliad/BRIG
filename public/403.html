@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="theme-color" content="#0b1f3a" />
+    <title>403 — Access restricted | BRIG</title>
+    <style>
+      :root {
+        --ink: #142b3b; --heading: #102a3a; --muted: #526675; --paper: #ffffff;
+        --canvas: #f3f7f8; --border: #dce6e9; --teal: #087e83; --teal-strong: #075e65;
+        --teal-soft: #e7f4f2; --danger: #a32d2d; --danger-bg: #fbeaea;
+        --radius: 0.5rem; --maxw: 1120px;
+        --font: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body { font-family: var(--font); color: var(--heading); background: var(--paper); line-height: 1.55; -webkit-font-smoothing: antialiased; }
+      h1, h2 { line-height: 1.2; color: var(--heading); margin: 0; }
+      a { color: var(--teal-strong); }
+      :focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; border-radius: 4px; }
+      .skip-link { position: absolute; left: -999px; top: 0; background: var(--heading); color: #fff; padding: 8px 14px; z-index: 100; }
+      .skip-link:focus { left: 8px; top: 8px; }
+      .app-root { display: flex; flex-direction: column; min-height: 100vh; }
+      .site-header { background: var(--paper); border-bottom: 1px solid var(--border); }
+      .site-header-inner { max-width: var(--maxw); margin: 0 auto; padding: 12px 24px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+      .brand { display: flex; align-items: center; gap: 12px; }
+      .brand-mark { background: var(--teal-strong); color: #fff; font-weight: 800; letter-spacing: 1px; padding: 8px 10px; border-radius: 6px; font-size: 15px; }
+      .brand-text { display: flex; flex-direction: column; }
+      .brand-title { font-weight: 700; font-size: 15px; color: var(--heading); }
+      .brand-sub { font-size: 11px; color: var(--muted); letter-spacing: 0.4px; text-transform: uppercase; }
+      .site-main { flex: 1; width: 100%; }
+      .page { max-width: var(--maxw); margin: 0 auto; padding: 26px 24px 60px; }
+      .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--teal-strong); margin: 0 0 10px; }
+      .hero-title { font-size: 34px; letter-spacing: -0.3px; margin: 0 0 14px; max-width: 900px; }
+      .hero-lead { font-size: 17px; color: var(--muted); max-width: 800px; margin: 0 0 22px; }
+      .code-pill { display: inline-block; background: var(--teal-soft); color: var(--teal-strong); border: 1px solid #bfe0dd; border-radius: 999px; padding: 2px 8px; font-size: 12.5px; font-weight: 700; }
+      .card { background: var(--paper); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 24px; margin: 0 0 20px; max-width: 880px; }
+      .card-title { font-size: 18px; margin: 0 0 6px; }
+      ul.checks { list-style: none; margin: 0 0 4px; padding: 0; }
+      ul.checks li { position: relative; padding-left: 26px; margin: 0 0 10px; }
+      ul.checks li::before { content: ""; position: absolute; left: 6px; top: 0.6em; width: 7px; height: 7px; border-radius: 50%; background: var(--teal); }
+      .btn { display: inline-block; border: 1px solid transparent; border-radius: 9px; padding: 10px 18px; font-weight: 650; font-size: 14px; text-decoration: none; }
+      .btn-primary { background: var(--teal-strong); color: #fff; }
+      .btn-primary:hover { background: #03484d; }
+      .btn-secondary { background: var(--paper); color: var(--teal-strong); border-color: var(--teal-strong); }
+      .btn-secondary:hover { background: var(--teal-soft); }
+      .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+      .callout { border-radius: 10px; padding: 14px 16px; margin: 14px 0 0; border: 1px solid var(--border); max-width: 880px; }
+      .callout-danger { background: var(--danger-bg); border-color: #f0c4c4; }
+      .callout strong { display: block; margin-bottom: 4px; }
+      .callout p { margin: 0.35em 0; }
+      .site-footer { background: var(--paper); border-top: 1px solid var(--border); margin-top: auto; }
+      .site-footer-inner { max-width: var(--maxw); margin: 0 auto; padding: 20px 24px; font-size: 12.5px; color: var(--muted); }
+      .footer-brand { color: var(--heading); font-weight: 700; margin: 0 0 4px; }
+      .footer-links { margin: 0; }
+      .footer-links a { color: var(--teal-strong); font-weight: 600; }
+      @media (max-width: 520px) { .hero-title { font-size: 26px; } }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="app-root">
+      <header class="site-header">
+        <div class="site-header-inner">
+          <div class="brand">
+            <span class="brand-mark" aria-hidden="true">BRIG</span>
+            <span class="brand-text">
+              <span class="brand-title">CISO Board Reporting Intelligence Generator</span>
+              <span class="brand-sub">Executive cybersecurity reporting</span>
+            </span>
+          </div>
+        </div>
+      </header>
+
+      <main id="main" class="site-main">
+        <div class="page">
+          <p class="eyebrow">Error 403 · Access restricted</p>
+          <h1 class="hero-title">This request did not come through the site’s Cloudflare edge.</h1>
+          <p class="hero-lead">
+            BRIG is published only through Cloudflare. Requests that reach the origin server directly are
+            refused, so that the web application firewall, rate limits and caching cannot be bypassed.
+          </p>
+
+          <section class="card">
+            <h2 class="card-title">What to do</h2>
+            <ul class="checks">
+              <li>Open BRIG at its normal web address — the domain name you usually use in the browser.</li>
+              <li>If you followed a bookmark or link that points at an IP address, replace it with the domain name.</li>
+              <li>If the normal address also shows this page, the origin is missing or rejecting the Cloudflare
+                origin header. The operator should check the Cloudflare request-header rule and the deployed
+                <span class="code-pill">.htaccess</span> (deployment guide, section 15).</li>
+            </ul>
+            <div class="callout callout-danger">
+              <strong>Nothing was changed or lost</strong>
+              <p>This response is produced by the web server before any BRIG application code runs.</p>
+            </div>
+            <div class="actions">
+              <a class="btn btn-primary" href="/">Return to BRIG</a>
+              <a class="btn btn-secondary" href="https://www.iliadis.net">iliadis.net</a>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <div class="site-footer-inner">
+          <p class="footer-brand">CISO Board Reporting Intelligence Generator (BRIG)</p>
+          <p class="footer-links">
+            <a href="/LICENSE.txt">License</a> ·
+            <a href="/THIRD-PARTY-NOTICES.txt">Third-party notices</a>
+          </p>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
