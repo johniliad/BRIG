@@ -5,6 +5,8 @@ dist/
 dist-ssr/
 # Assembled upload set (npm run deploy:package) — may contain the origin secret
 deploy/
+# The zipped upload set — same content, same secret. Never commit.
+deploy.zip
 # Local env / config (never commit secrets)
 .env
 .env.*
