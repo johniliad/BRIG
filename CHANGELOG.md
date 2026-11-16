@@ -5,6 +5,15 @@ All notable changes to BRIG — CISO Board Reporting Intelligence Generator.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] — 2026-11-16
+
+### Changed
+
+- The homepage brand-cover image now renders at **308 px** (a 65% reduction from the previous
+  880 px cap), centered under the hero with its caption aligned. The asset itself is unchanged —
+  the 1600×1067 source keeps the social card (`og:image`) and the GitHub social preview at full
+  quality.
+
 ## [1.1.1] — 2026-11-16
 
 ### Security
