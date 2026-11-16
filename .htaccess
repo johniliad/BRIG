@@ -3,17 +3,32 @@
 # ===========================================================================
 #  TEMPLATE — DO NOT UPLOAD THIS FILE.
 #
-#  `npm run build` renders it to dist/.htaccess with the real Cloudflare
-#  origin secret (scripts/render-htaccess.mjs, docs/deployment.md section 15).
+#  `npm run build` renders it to dist/.htaccess, substituting two build-time
+#  values (scripts/render-htaccess.mjs; docs/deployment.md §9 and §15):
+#    __BRIG_CF_ORIGIN_SECRET__  Cloudflare origin-lock shared secret
+#    __BRIG_CSP_STYLE_HASHES__  sha256 hashes of the site's static inline
+#                               styles (public/403.html, 404.html, 500.html
+#                               and api/lib/print.css)
 #  Upload dist/.htaccess instead. Uploading this file as-is makes every
 #  request return 403, because the placeholder below never matches.
 # ===========================================================================
 Options -Indexes
 
 # ---------------------------------------------------------------------------
+# No automatic "/dir → /dir/" redirects (mod_dir). Every such 301 is a
+# redirect response that carries an HTML body — exactly the pattern OWASP ZAP
+# reports as "Big Redirect Detected (Potential Sensitive Information Leak)".
+# The application has no directory URLs: unknown paths must fall through to
+# the branded 404 instead of being bounced through a redirect.
+# ---------------------------------------------------------------------------
+DirectorySlash Off
+
+# ---------------------------------------------------------------------------
 # Branded error documents (generated into dist/ from public/403.html,
 # 404.html and 500.html). They use the site's own look and feel and are
 # self-contained, so they render even when the app bundle cannot load.
+# Their single inline <style> block is whitelisted in the CSP below by its
+# build-time sha256 hash.
 # ---------------------------------------------------------------------------
 ErrorDocument 403 /403.html
 ErrorDocument 404 /404.html
@@ -62,7 +77,21 @@ RewriteRule ^ - [L]
 RewriteCond %{HTTP:X-Origin-Secret} !^__BRIG_CF_ORIGIN_SECRET__$
 RewriteRule ^ - [F,L]
 
-# 4) The application publishes exactly one real URL besides "/": the About view,
+# 4) Force HTTPS — AFTER the origin lock (CR1: the lock precedes every other
+#    rewrite/redirect, so direct-to-origin probes are 403'd, never redirected).
+#    The 301 Apache emits for R=301 carries a small fixed body, so it can never
+#    become a "big redirect". Loop-safe under every Cloudflare SSL mode:
+#      - %{HTTPS} !=on       skips when the ORIGIN leg is already TLS
+#                            (Cloudflare "Full"/"Full (strict)", direct TLS);
+#      - X-Forwarded-Proto   skips when Cloudflare delivered the VISITOR
+#        != https            request over TLS (covers "Flexible", where the
+#                            origin leg is plain HTTP for HTTPS visitors).
+#    Visitors on plain HTTP are therefore redirected exactly once.
+RewriteCond %{HTTPS} !=on
+RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC]
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L,NE]
+
+# 5) The application publishes exactly one real URL besides "/": the About view,
 #    pushed with history.pushState. Serve index.html for it so a reload or a
 #    bookmark works instead of dropping the visitor on the 404 page. Any other
 #    unknown path still gets the branded 404.
@@ -70,9 +99,56 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^about/?$ index.html [L]
 
+# ---------------------------------------------------------------------------
+# Security headers — `Header always set`, so they are present on EVERY
+# response: static assets, the SPA, API JSON and the branded error documents
+# (ZAP: HSTS not set/disabled, X-Content-Type-Options missing, CSP not set,
+# CSP without fallback, missing anti-clickjacking header). PHP endpoints send
+# the same set from api/lib/bootstrap.php as a fallback for hosts without
+# mod_headers; identical values, so the duplication is harmless.
+# ---------------------------------------------------------------------------
 <IfModule mod_headers.c>
-  # A strict CSP can be tightened to match your final asset hosts.
-  Header set Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; font-src 'self'; base-uri 'self'; frame-ancestors 'self'"
+  # HSTS — one year, all subdomains. Cloudflare passes it through to the
+  # browser; optionally also enable HSTS at the Cloudflare edge.
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+  # X-Content-Type-Options.
+  Header always set X-Content-Type-Options "nosniff"
+
+  # Anti-clickjacking — X-Frame-Options for older browsers, frame-ancestors
+  # ('none') in the CSP below for modern ones.
+  Header always set X-Frame-Options "DENY"
+
+  # Content Security Policy.
+  #  - default-src 'self' is the fallback for every fetch-style directive,
+  #    so no directive is ever left without one (ZAP: "Failure to Define
+  #    Directive with No Fallback").
+  #  - style-src has NO 'unsafe-inline'. The only inline styles on the site
+  #    are the static <style> blocks of the branded error pages and the print
+  #    stylesheet of the printable-PDF fallback; both are allowed by their
+  #    build-time sha256 hashes (__BRIG_CSP_STYLE_HASHES__). Everything else
+  #    styles through external stylesheets and CSSOM (React/Chart.js set
+  #    styles via element.style, which CSP does not restrict).
+  #  - object-src 'none' and frame-ancestors 'none': no plugins, no framing.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'__BRIG_CSP_STYLE_HASHES__; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; frame-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+
+  # Cross-domain isolation (ZAP: "Cross-Domain Misconfiguration"). The API
+  # only ever echoes explicitly configured origins (never '*'); these headers
+  # additionally keep the site's resources and browsing contexts unembeddable
+  # and unopener-able from other origins.
+  Header always set Cross-Origin-Opener-Policy "same-origin"
+  Header always set Cross-Origin-Resource-Policy "same-origin"
+
+  # Defence in depth: the app needs no powerful features.
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), usb=(), payment=(), interest-cohort=()"
+
+  # Cookie hardening (ZAP: "Cookie No HttpOnly Flag"). The app sets no cookies
+  # itself; if one ever appears (PHP session, host module), append the missing
+  # flags. The negative lookaheads keep cookies that already carry a flag
+  # untouched, so each rule is safe to run over every response.
+  Header always edit Set-Cookie "(?i)^(?!.*;\s*httponly)(.+)$" "$1; HttpOnly"
+  Header always edit Set-Cookie "(?i)^(?!.*;\s*secure)(.+)$" "$1; Secure"
+  Header always edit Set-Cookie "(?i)^(?!.*;\s*samesite)(.+)$" "$1; SameSite=Strict"
 </IfModule>
 
 # Block direct web access to server-side / private folders (PHP reads them

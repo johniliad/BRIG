@@ -4,7 +4,7 @@ declare(strict_types=1);
 /**
  * Shared bootstrap for all BRIG API endpoints.
  * - JSON-only responses with a consistent envelope
- * - Basic security headers
+ * - Full security-header set (mirrored by the web root .htaccess)
  * - No debug stack traces in production
  */
 
@@ -14,22 +14,68 @@ require_once __DIR__ . '/config.php';
 ini_set('display_errors', '0');
 error_reporting(E_ALL);
 
-function brig_apply_headers(): void
+// Secure-cookie defaults (guideline: "Secure cookies if cookies are ever
+// introduced"). The app currently sets no cookies; these apply to any PHP
+// session cookie if one is ever started, on top of the Set-Cookie hardening
+// in the web root .htaccess.
+ini_set('session.cookie_httponly', '1');
+ini_set('session.cookie_secure', '1');
+ini_set('session.cookie_samesite', 'Strict');
+ini_set('session.use_strict_mode', '1');
+
+/**
+ * Security headers shared by every API response.
+ *
+ * The web root .htaccess sets the same headers with `Header always set`
+ * (covering static files and error documents too); sending them here as well
+ * keeps the API hardened on hosts without mod_headers. The
+ * Content-Security-Policy is deliberately NOT sent from PHP: the single
+ * site-wide policy lives in the .htaccess template, where the build injects
+ * the sha256 style hashes — one source of truth, no drift.
+ */
+function brig_send_security_headers(): void
 {
     header('X-Content-Type-Options: nosniff');
     header('Referrer-Policy: no-referrer');
     header('X-Frame-Options: DENY');
+    header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+    header('Cross-Origin-Opener-Policy: same-origin');
+    header('Cross-Origin-Resource-Policy: same-origin');
+    header('Permissions-Policy: camera=(), microphone=(), geolocation=(), usb=(), payment=(), interest-cohort=()');
     header('Content-Type: application/json; charset=utf-8');
     header('Cache-Control: no-store');
+}
 
-    // Same-origin is always allowed; add any configured origins for flexibility.
-    $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-    $allowed = brig_config()['app']['allowed_origins'] ?? [];
-    if ($origin !== '' && in_array($origin, $allowed, true)) {
-        header('Access-Control-Allow-Origin: ' . $origin);
-        header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-        header('Access-Control-Allow-Headers: Content-Type, Accept');
-        header('Vary: Origin');
+function brig_apply_headers(): void
+{
+    // Static headers FIRST: they must be on the wire even when the config
+    // load below throws (the exception handler then reports the problem on a
+    // fully hardened response instead of a bare one).
+    brig_send_security_headers();
+
+    // Same-origin is always allowed; add any configured origins for
+    // flexibility. A wildcard is never honoured — echoing arbitrary origins
+    // back is the CORS pattern ZAP reports as "Cross-Domain Misconfiguration",
+    // so only exact, explicitly configured origin strings may be reflected.
+    try {
+        $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+        $configured = brig_config()['app']['allowed_origins'] ?? [];
+        $allowed = [];
+        if (is_array($configured)) {
+            foreach ($configured as $o) {
+                if (is_string($o) && $o !== '*' && $o !== '') {
+                    $allowed[] = $o;
+                }
+            }
+        }
+        if ($origin !== '' && in_array($origin, $allowed, true)) {
+            header('Access-Control-Allow-Origin: ' . $origin);
+            header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+            header('Access-Control-Allow-Headers: Content-Type, Accept');
+            header('Vary: Origin');
+        }
+    } catch (\Throwable $e) {
+        error_log('[BRIG] CORS origin list unavailable: ' . $e->getMessage());
     }
     if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
         http_response_code(204);

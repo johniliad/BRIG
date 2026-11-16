@@ -29,6 +29,19 @@ export function Landing() {
         <p className="hero-meta">
           {METRICS.length} metrics · deterministic CISO reasoning · optional AI wording · PDF &amp; PowerPoint output
         </p>
+        <figure className="hero-figure">
+          <img
+            src="img/brig-preview.jpg"
+            alt="BRIG — Board Risk and Insights Generator brand cover: a boardroom with a reporting-chart illustration, the BRIG wordmark and the tagline 'Security Metrics to Executive Insights — Board-Ready Reports'. Built by Dr. John ILIADIS."
+            width={1600}
+            height={1067}
+            className="hero-image"
+            decoding="async"
+          />
+          <figcaption className="hero-figure-caption">
+            Security Metrics to <strong>Executive Insights</strong> — Board-Ready Reports.
+          </figcaption>
+        </figure>
       </section>
 
       <div className="landing-grid">

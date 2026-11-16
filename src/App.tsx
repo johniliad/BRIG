@@ -177,7 +177,7 @@ export default function App() {
                 target="_blank"
                 rel="author external noopener noreferrer"
               >
-                Dr. John Iliadis<span className="visually-hidden"> (opens in a new tab)</span>
+                Dr. John ILIADIS<span className="visually-hidden"> (opens in a new tab)</span>
               </a>{' '}
               · Executive Cybersecurity Reporting · <button className="link-btn" onClick={goAbout}>About this product</button>{' '}
               · <span className="footer-build">build {APP_BUILD}</span>

@@ -334,11 +334,28 @@ per-session regenerations, and a global daily budget. If you see
 
 ## 9. Step 7 — Apache, HTTPS and permissions
 
-- **HTTPS:** enable AutoSSL (Let's Encrypt) in cPanel → **SSL/TLS Status**. Force HTTPS (see below).
-- **.htaccess:** the root `.htaccess` disables directory listing, registers the branded `403/404/500`
-  pages, enforces the Cloudflare origin lock (§15), refuses dotfiles, and blocks
-  `/data`, `/database`, `/scripts`, `/tests`, `/private-config`. `api/.htaccess` additionally blocks
-  `/api/lib`, `/api/vendor`, `/api/storage` and `*.json|*.md|*.sql|*.example.php|*.lock`.
+- **HTTPS:** enable AutoSSL (Let's Encrypt) in cPanel → **SSL/TLS Status**. Force HTTPS is built into
+  `dist/.htaccess` (see below) — the host-level "Force HTTPS Redirect" does not need to be enabled.
+- **.htaccess:** the root `.htaccess` disables directory listing **and automatic `/dir` → `/dir/`
+  redirects** (`DirectorySlash Off`), registers the branded `403/404/500` pages, enforces the
+  Cloudflare origin lock (§15), forces HTTPS with a loop-safe minimal-body 301 **placed after the
+  origin lock** (CR1 ordering), refuses dotfiles, and blocks `/data`, `/database`, `/scripts`,
+  `/tests`, `/private-config`. `api/.htaccess` additionally blocks `/api/lib`, `/api/vendor`,
+  `/api/storage` and `*.json|*.md|*.sql|*.example.php|*.lock`.
+- **Security headers (§11 lists the full set):** the root `.htaccess` sets them with `Header always
+  set`, so they appear on **every** response — the SPA, static assets, API JSON and the branded
+  error documents alike. The set covers Strict-Transport-Security (1 year, includeSubDomains),
+  `X-Content-Type-Options`, `X-Frame-Options: DENY` + `frame-ancestors 'none'`, a strict
+  Content-Security-Policy, `Cross-Origin-Opener-Policy` / `Cross-Origin-Resource-Policy`,
+  `Permissions-Policy`, `Referrer-Policy`, and Set-Cookie hardening (HttpOnly/Secure/SameSite are
+  appended to any cookie the origin ever emits). PHP mirrors the same headers in
+  `api/lib/bootstrap.php` for hosts without `mod_headers`.
+- **CSP style hashes:** the CSP ships without `style-src 'unsafe-inline'`. The only inline styles
+  on the site — the `<style>` block of each error page and the print stylesheet of the
+  printable-PDF fallback (`api/lib/print.css`) — are whitelisted by `sha256` hashes that
+  `scripts/render-htaccess.mjs` computes at build time and renders into `dist/.htaccess`
+  (placeholder `__BRIG_CSP_STYLE_HASHES__`). Editing any of those files changes its hash — always
+  rebuild so `dist/.htaccess` is regenerated, or the styles will be blocked.
 - **Certificate validation:** `/.well-known/acme-challenge/` (Let's Encrypt / ACME) and
   `/.well-known/pki-validation/` (HTTP file-based DCV) are explicitly exempt from the origin lock, at
   any path depth, so AutoSSL renewal always works even though the rest of the origin is closed.
@@ -347,12 +364,15 @@ per-session regenerations, and a global daily budget. If you see
   them instead of appending "Additionally, a 403 error was encountered…".
 - **Permissions:** folders `755`, files `644`. No world-writable directories needed.
 
-Optional — force HTTPS by adding to the **root** `.htaccess` (only if not already handled by the host):
+The force-HTTPS rule (already in `dist/.htaccess`) is loop-safe under every Cloudflare SSL mode: it
+skips when the origin leg is already TLS (`%{HTTPS}`) and when Cloudflare delivered the visitor
+request over TLS (`X-Forwarded-Proto`), so plain-HTTP visitors are redirected exactly once and
+direct-to-origin probes are still answered by the origin lock with `403`:
 
 ```apache
-RewriteEngine On
-RewriteCond %{HTTPS} off
-RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+RewriteCond %{HTTPS} !=on
+RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC]
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L,NE]
 ```
 
 ---
@@ -370,7 +390,11 @@ RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 | Server PDF | `POST /api/reports/pdf.php` | `application/pdf` (File_PDF) or `text/html` fallback |
 | Persistence | `POST /api/reports/save.php` | JSON `id`+`token` (or 503 if no DB) |
 | Demo | click “See Example Report (demo)” | Report renders with counter-signals |
-| Determinism | `npm test` (locally) | 13 tests pass |
+| Determinism | `npm test` (locally) | all tests pass, incl. `security-headers.test.ts` |
+| Security headers | `curl -sI https://yourdomain.com/brig/ \| grep -iE 'strict-transport\|x-frame\|x-content-type\|content-security\|cross-origin\|permissions-policy'` | every header present |
+| Headers on error pages | `curl -sI https://yourdomain.com/this-page-does-not-exist \| grep -i content-security` | CSP present (Header always set) |
+| Sub-resource integrity | view source of `/` | `integrity="sha384-…"` on the bundle `<script>`/`<link>` tags |
+| No unsafe-inline | `curl -sI https://yourdomain.com/brig/ \| grep -i content-security` | `style-src` lists `sha256` hashes, no `'unsafe-inline'` |
 | Origin lock — via Cloudflare | `curl -sI https://yourdomain.com/brig/` | `200` |
 | Origin lock — origin bypassed | `curl -skI --resolve yourdomain.com:443:<origin-ip> https://yourdomain.com/brig/` | `403` |
 | Origin lock — header present | same, plus `-H "X-Origin-Secret: <secret>"` | `200` |
@@ -393,6 +417,24 @@ RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 - **Opt-in persistence**: token shown once, only its hash stored, automatic expiry, per-IP save limit.
 - **Defensive `.htaccess`** (headers, listing off, sensitive folders/files blocked), prepared statements,
   strict input checks, no debug traces.
+- **Security headers on every response** (SPA, static assets, API JSON, branded error documents):
+  `Strict-Transport-Security` (1 year, `includeSubDomains`), `X-Content-Type-Options: nosniff`,
+  `X-Frame-Options: DENY` + `frame-ancestors 'none'`, `Referrer-Policy: no-referrer`,
+  `Permissions-Policy`, `Cross-Origin-Opener-Policy` / `Cross-Origin-Resource-Policy: same-origin`,
+  and a strict **Content-Security-Policy** (`default-src 'self'`, `object-src 'none'`, `form-action`,
+  `base-uri`, `upgrade-insecure-requests`). `style-src` carries **no `'unsafe-inline'`**: the site's
+  only inline styles (error-page `<style>` blocks and the print stylesheet) are allowed by build-time
+  `sha256` hashes rendered into `dist/.htaccess`.
+- **Cookie hardening** — the app sets no cookies, but any `Set-Cookie` the origin ever emits gets
+  `HttpOnly; Secure; SameSite=Strict` appended by the web root `.htaccess`, and PHP session-cookie
+  defaults are hardened in `api/lib/bootstrap.php`.
+- **CORS discipline** — the API only echoes explicitly configured origins (a wildcard is never
+  honoured); same-origin callers need no CORS at all.
+- **Sub-resource integrity** — `scripts/postbuild-html.mjs` stamps `integrity="sha384-…"` on the
+  built bundle tags. Keep Cloudflare **Auto-Minify and Rocket Loader OFF** for this zone: they
+  rewrite the JavaScript body and would break the integrity check.
+- **Minimal redirect surface** — `DirectorySlash Off` (no directory 301s) and a loop-safe, minimal
+  body force-HTTPS 301 placed after the origin lock.
 - **Cloudflare origin lock:** every request must carry the `X-Origin-Secret` header that Cloudflare
   injects; the value is rendered into `dist/.htaccess` at build time from a git-ignored file and never
   committed (§15, requirement CR1–CR12). Direct-to-origin requests get `403`.

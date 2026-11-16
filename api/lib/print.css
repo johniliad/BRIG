@@ -1,0 +1,47 @@
+/*
+ * Print stylesheet for the "print-ready HTML" fallback of /api/reports/pdf.php
+ * (served when the File_PDF class is not installed on the host).
+ *
+ * Kept as a real file — not a PHP string — so scripts/render-htaccess.mjs can
+ * hash its exact bytes at build time into the site Content-Security-Policy
+ * (style-src sha256 sources, no unsafe-inline). The printable HTML is written
+ * into a new window with document.write, so it inherits the SPA's CSP: the
+ * style element embedded by pdf_template.php must stay byte-identical to this
+ * file.
+ *
+ * RULES FOR THIS FILE (enforced by the CSP):
+ *   - No @import and no url() references: the document must be self-contained.
+ *   - No inline style attributes anywhere in the generated HTML; style
+ *     everything through the classes below (bar widths are SVG geometry
+ *     attributes, which CSP does not restrict).
+ *   - Keep markup-like tokens (angle brackets, quotes) out of the comments:
+ *     this file is embedded verbatim inside an HTML style element.
+ */
+
+@page{size:A4 landscape;margin:12mm}
+*{box-sizing:border-box}
+body{font-family:DejaVu Sans,Arial,sans-serif;color:#102a3a;font-size:11px;margin:0}
+.head{display:flex;justify-content:space-between;border-bottom:3px solid #102a3a;padding-bottom:8px}
+.brand{font-size:11px;font-weight:bold;color:#075e65;letter-spacing:.5px}
+.brand-sub{font-size:10px;color:#526675}
+.org{font-size:15px;font-weight:bold;text-align:right}.dates{font-size:10px;color:#526675;text-align:right}
+.status{margin:8px 0 4px}
+.badge{display:inline-block;padding:3px 10px;border-radius:10px;font-weight:bold;font-size:10px;background:#e7f4f2;color:#075e65;border:1px solid #bfe0dd}
+.badge.conf{background:#e6f5ec;color:#1b7a3d;border-color:#bfe3cd}
+h1{font-size:19px;margin:8px 0 6px}.msg{font-size:11.5px;color:#142b3b;margin:0 0 10px}
+.section-title{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#075e65;font-weight:bold;margin:10px 0 4px}
+ul{margin:0;padding-left:14px}li{margin-bottom:3px}
+.con{color:#b32e2e}.pos{color:#1b7a3d}.neu{color:#526675}.muted{color:#7c8a99}
+.cols{width:100%;border-collapse:collapse}.cols td{vertical-align:top;width:33%;padding-right:12px}
+.chart-title{font-weight:bold;font-size:11px}.chart-sub{font-size:9px;color:#7c8a99;margin-bottom:4px}
+.bar-row{display:flex;align-items:center;margin:3px 0}.bar-label{width:34%;font-size:9px;color:#526675}
+.bar-track{flex:1;background:#eef2f7;height:9px;border-radius:4px;margin:0 6px}
+/* Bar fills are SVG rect elements: the width is a geometry attribute, not a
+   style attribute, so it survives a strict style-src. preserveAspectRatio=none
+   stretches the 100x9 viewBox to the track; the fill is therefore drawn with
+   square ends (a CSS border-radius would distort under the non-uniform scale). */
+.bar-svg{display:block;width:100%;height:9px}
+.bar-fill{fill:#075e65}
+.bar-val{width:12%;text-align:right;font-size:9px;color:#102a3a}
+.footer{border-top:1px solid #dce6e9;margin-top:10px;padding-top:6px;font-size:8.5px;color:#7c8a99}
+.pdf-banner{background:#fdf3e2;border:1px solid #efd9ad;color:#a86a12;font-family:Arial,sans-serif;font-size:11px;padding:6px 10px;margin:0 0 8px}

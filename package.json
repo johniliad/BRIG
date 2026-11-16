@@ -1,11 +1,11 @@
 {
   "name": "brig-ciso-board-reporting",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "BRIG — CISO Board Reporting Intelligence Generator. Deterministic executive cybersecurity reporting with an optional LLM writing layer.",
   "type": "module",
   "license": "Apache-2.0",
-  "author": "Dr. John Iliadis <https://www.iliadis.net/>",
+  "author": "Dr. John ILIADIS <https://www.iliadis.net/>",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

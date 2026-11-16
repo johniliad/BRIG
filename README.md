@@ -1,8 +1,52 @@
 # BRIG — CISO Board Reporting Intelligence Generator
 
-<img width="600" height="400" alt="image" src="https://github.com/user-attachments/assets/1351fe01-2502-4474-8e97-64b9735caf47" />
+<img width="600" alt="BRIG — Board Risk & Insights Generator brand cover: Security Metrics to Executive Insights — Board-Ready Reports. Built by Dr. John ILIADIS." src="public/img/brig-preview.jpg" />
 
+## About
 
+BRIG demonstrates my ability to bridge technical cybersecurity performance and board-level communication. I designed it to turn security metrics into concise executive reporting, combining graphs, statistics and structured insight rather than simply displaying dashboards. For a recruiter, this is evidence of a core CISO/CIO capability: understanding the technical signal, deciding what matters to leadership, and communicating it clearly enough to support governance, investment and risk decisions.
+
+## So what?
+
+**The problem, in one sentence:** boards do not need another operational dashboard — they need a concise, defensible answer to *"where do we stand, is it improving, and what should we decide?"*, and turning technical cybersecurity metrics into exactly that kind of governance-grade reporting is the problem BRIG solves.
+
+**See it in a few seconds — [video demo](https://youtu.be/GMHAMwTGIQE).**
+
+### What problem this solves, and for whom
+
+Security teams measure a lot and communicate too little of what matters: raw metric dumps and operational dashboards rarely translate into governance, investment or risk decisions. BRIG closes that translation gap. It takes the metrics an organisation already tracks and produces a one-page, evidence-based board narrative — executive position, confidence, material findings, contradictions/counter-signals, recommended board actions and charts — that can be defended line by line, exported to PDF/PowerPoint/JSON, and stress-tested with a built-in **Challenge the Story** counter-analysis before it ever faces the board.
+
+Built for:
+
+- **CISOs, CIOs and security leaders** who must report upward, justify security investment and brief boards or executive committees;
+- **boards, audit and risk committees** that need signal and decisions, not noise and tooling screenshots;
+- **vCISOs, consultants and MSSPs** who produce recurring security reporting for clients;
+- **anyone who has to translate cybersecurity performance into executive language** — the same core CISO/CIO capability this repository demonstrates.
+
+## Methodology
+
+BRIG is **deterministic-first and evidence-based**: the same inputs always produce the same report, and every statement in it is traceable back to user-supplied data. The methodology, the metric library and the rule set are **versioned and stamped into every generated report** (`methodology_version` · `metric_library_version` · `rule_version`), so any report can be tied to the exact rules that produced it. The full write-up lives in [`docs/methodology.md`](docs/methodology.md) and on the in-app **Methodology** page; in detail:
+
+1. **Input model.** A reporting profile (organisation, reporting vs comparison period, audience, currency) plus the selected metrics, each with current and comparison-period values, optional targets/thresholds, a data-quality flag and a free-text note (treated as untrusted data if AI is used).
+2. **Validation.** Types, ranges and units are validated before any analysis runs.
+3. **Trend calculation.** Absolute delta, relative percentage delta, and percentage-point delta for percentage metrics — computed per metric against the comparison period.
+4. **Directionality.** `higher_is_better`, `lower_is_better`, `target_range`, `target_value`, `context_dependent`, `not_directional`. There is no blanket "up is good" or "up is bad": an increase in patching coverage is good, an increase in KEV-listed vulnerabilities is bad, and some metrics only make sense against a target.
+5. **Magnitude bands.** Negligible ≤ 2%, minor ≤ 5%, moderate ≤ 15%, significant ≤ 30%, material > 30% (percentage metrics measured in percentage points). Versioned defaults, configurable.
+6. **Targets and thresholds.** Target breaches and threshold crossings are detected and folded into severity and materiality.
+7. **Cross-metric relationships.** 53 relationship heuristics (e.g. patching coverage vs exploited-vulnerability exposure) used as analytical signals — never as proof of causality.
+8. **Contradiction and nuance detection.** The engine deliberately hunts for patterns where a simplistic conclusion would mislead the board — e.g. availability up while restore-test success is down, or vulnerability volume down while exploited vulnerabilities are up.
+9. **Materiality scoring.** A versioned weighted formula — board relevance 0.20 · severity 0.20 · magnitude 0.15 · target breach 0.10 · persistence 0.10 · relationship strength 0.10 · business impact 0.10 · regulatory relevance 0.05 — decides which findings are board-material versus operational noise.
+10. **Confidence.** *Board Narrative Confidence* is derived from data completeness, comparability, relationship support and the number of contradictions, graded High / Medium / Low / **Insufficient evidence**, and always reported with its drivers (e.g. "two comparable reporting periods and no external benchmark"). With no comparable data, trend conclusions are capped — the report says so explicitly rather than overclaiming.
+11. **Storyline selection.** 31 story rules with explicit all/any evidence conditions, priority ordering, confidence requirements and counter-signals select one dominant storyline (e.g. *investment without outcome*, *exposure concentration*, *resilience assurance gap*).
+12. **Narrative assembly.** An executive position (application-derived indicator, explicitly not a risk rating) plus headline, executive message, key signals, positive developments, areas of concern, strategic priorities and board actions mapped to four decision categories: *maintain course*, *redirect investment*, *accelerate remediation*, *increase assurance*.
+13. **Chart selection.** Charts are chosen deterministically per metric and storyline (bar, line, grouped bar, before/after, target bar) and rendered with Chart.js — the AI layer never produces charts or numbers.
+14. **Challenge the Story.** A deterministic counter-analysis lists what evidence would weaken or change the narrative, so the story survives scrutiny before the board asks.
+15. **Optional AI Executive Writing Layer.** Wording only, never facts: the LLM receives a minimal **ReportFacts** payload (pre-approved numbers and metric keys — never the full library or raw notes), user-entered free text is treated as untrusted data (prompt-injection defence), and the output must pass schema validation, numeric fact-checking against the approved numbers, and a banned-claims filter (e.g. no "industry average", "fully compliant", "we guarantee"). Any failure falls back to the deterministic wording; the user's own edits always win.
+16. **Determinism, tested.** Golden scenarios A–J plus determinism and demo end-to-end tests (`npm test`) pin the engine's behaviour, so methodology changes are intentional and reviewable.
+17. **Privacy by default.** Private/Deterministic mode computes everything in the browser — no metric values are stored or transmitted. Persistence is opt-in and token-secured; the AI layer is opt-in, one-time-token gated and rate-limited server-side.
+18. **Honest limitations.** Results depend on user-supplied data quality and completeness; relationships and storylines are heuristics, not proof of causality; no industry benchmarks are invented; BRIG is an analytical and executive-communication aid — not an audit, certification, or legal/regulatory advice, and framework references (NIST, ISO/IEC 27001, CIS) imply no certification or endorsement.
+
+---
 
 Turn cybersecurity metrics into a board-ready story. Select the measures you have, enter current and
 comparison-period data, and BRIG analyses trends, directionality, relationships, contradictions,

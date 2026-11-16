@@ -41,6 +41,9 @@ ai-access-tokens.txt
 !/api/storage/.gitkeep
 # Vibe coding markdown files — local only, never published to GitHub
 requirements/
+# Brand-cover source images (local only; the web-ready derivative ships in
+# public/img/brig-preview.jpg)
+pics-sources/
 #Development plan in markdown
 CISO_Board_Reporting_Development_Plan.md
 # ==========================================

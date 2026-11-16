@@ -1,13 +1,21 @@
 # API directory hardening.
 Options -Indexes
 
+# ---------------------------------------------------------------------------
+# The shared security-header set — X-Content-Type-Options, Referrer-Policy,
+# X-Frame-Options, Strict-Transport-Security, Content-Security-Policy (with
+# build-time style hashes), Cross-Origin-Opener-Policy,
+# Cross-Origin-Resource-Policy, Permissions-Policy and the Set-Cookie
+# hardening — is defined ONCE in the WEB ROOT .htaccess, which Apache applies
+# to /api as a subdirectory. Repeating it here would emit duplicate headers on
+# top of the root's `Header always set` directives. PHP endpoints also send
+# the same headers themselves (api/lib/bootstrap.php) for hosts without
+# mod_headers.
+# ---------------------------------------------------------------------------
 <IfModule mod_headers.c>
-  Header set X-Content-Type-Options "nosniff"
-  Header set Referrer-Policy "no-referrer"
-  Header set X-Frame-Options "DENY"
   # Keep internal API responses out of search engine indexes (server-side
-  # backstop to the robots.txt Disallow rules).
-  Header set X-Robots-Tag "noindex, nofollow, noarchive"
+  # backstop to the robots.txt Disallow rules). API-specific — not sent by PHP.
+  Header always set X-Robots-Tag "noindex, nofollow, noarchive"
 </IfModule>
 
 # Only allow the intended PHP entry points; block library includes and anything else.
@@ -19,3 +27,4 @@ Options -Indexes
 RedirectMatch 404 ^/api/lib(/|$)
 RedirectMatch 404 ^/api/storage(/|$)
 RedirectMatch 404 ^/api/vendor(/|$)
+

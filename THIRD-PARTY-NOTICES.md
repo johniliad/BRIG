@@ -1,7 +1,7 @@
 # Third-party notices — BRIG
 
 **Product:** BRIG — CISO Board Reporting Intelligence Generator
-**Owner:** Dr. John Iliadis · <https://www.iliadis.net/>
+**Owner:** Dr. John ILIADIS · <https://www.iliadis.net/>
 **This document:** attribution and licence texts for third-party software used by BRIG
 
 BRIG itself is licensed under the **Apache License 2.0** (see `LICENSE`). It also contains

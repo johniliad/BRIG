@@ -12,6 +12,7 @@ require_once __DIR__ . '/../lib/pdf_filepdf.php';
  * it returns the same report as a print-ready HTML document with a banner, so
  * the feature degrades gracefully. No browser automation is used.
  */
+brig_apply_headers();
 brig_require_method('POST');
 
 $body = brig_read_json_input();
@@ -33,10 +34,11 @@ if (is_string($pdfBytes) && strlen($pdfBytes) > 4) {
     exit;
 }
 
-// Fallback: printable HTML (browser Print -> Save as PDF).
+// Fallback: printable HTML (browser Print -> Save as PDF). The styling class
+// (.pdf-banner) lives in api/lib/print.css — the printable window inherits
+// the site CSP, which forbids inline style="" attributes.
 $html = brig_render_report_html($model);
-$banner = '<div style="background:#fdf3e2;border:1px solid #efd9ad;color:#a86a12;'
-    . 'font-family:Arial,sans-serif;font-size:11px;padding:6px 10px;margin:0 0 8px">'
+$banner = '<div class="pdf-banner">'
     . 'File_PDF is not available on the server; showing the print-ready report. Use your browser Print &rarr; Save as PDF, '
     . 'or install the File_PDF class (or set pdf.file_pdf_path) to enable server-side PDF.</div>';
 $htmlWithBanner = str_replace('<body>', '<body>' . $banner, $html);

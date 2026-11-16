@@ -4,12 +4,10 @@ require_once __DIR__ . '/lib/bootstrap.php';
 require_once __DIR__ . '/lib/data.php';
 
 // NOTE: do not call brig_apply_headers() here — it reads config and would throw
-// before we can report the problem. Set the safe headers manually instead.
-header('X-Content-Type-Options: nosniff');
-header('Referrer-Policy: no-referrer');
-header('X-Frame-Options: DENY');
-header('Content-Type: application/json; charset=utf-8');
-header('Cache-Control: no-store');
+// before we can report the problem. brig_send_security_headers() sends the
+// same static header set without touching the config, so the diagnostic is
+// always delivered on a hardened response.
+brig_send_security_headers();
 
 $configLoaded = false;
 $configError = null;
