@@ -77,7 +77,7 @@ export function buildCharts(
     });
   }
 
-  // --- Chart 2: prioritised materiality ranking (unit-consistent: scores) ---
+  // --- Chart 2: prioritised observed-signal evidence detail (unit-consistent: scores) ---
   const ranked = findings
     .map((f) => ({ f, m: materiality.get(f.metric_key)?.score ?? 0 }))
     .sort((a, b) => b.m - a.m)
@@ -88,15 +88,15 @@ export function buildCharts(
       value: m,
     }));
     charts.push({
-      id: 'materiality_ranking',
+      id: 'signal_ranking',
       type: 'horizontal_bar',
-      title: 'Prioritised signals by materiality',
-      subtitle: 'Application-derived materiality scores (0–100) for the selected findings',
+      title: 'Prioritised observed signals',
+      subtitle: 'Evidence-detail scores (0–100); the rule-based signal label is primary',
       unit: 'score',
       period: reportingLabel,
       metricKeys: ranked.map(({ f }) => f.metric_key),
       data,
-      accessibilityText: `Materiality ranking: ${ranked.map(({ f, m }) => `${library.get(f.metric_key)?.name ?? f.metric_key} (${m})`).join('; ')}.`,
+      accessibilityText: `Observed signal ranking: ${ranked.map(({ f, m }) => `${library.get(f.metric_key)?.name ?? f.metric_key} (${f.signalStrength}, detail ${m})`).join('; ')}.`,
       score: 90,
     });
   }

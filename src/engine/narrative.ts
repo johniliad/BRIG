@@ -100,7 +100,7 @@ function metricName(library: Map<string, MetricDefinition>, key: string): string
 }
 
 export function generateNarrative(input: NarrativeInput): NarrativeModel {
-  const { profile, position, primary, findings, contradictions, confidence, challenge, library, comparability, metricCount } = input;
+  const { profile, position, primary, findings, contradictions, confidence, challenge, library, comparability } = input;
 
   const positives = findings.filter((f) => f.kind === 'positive').slice(0, 3);
   const concerns = findings.filter((f) => f.kind === 'concern').slice(0, 3);
@@ -122,7 +122,7 @@ export function generateNarrative(input: NarrativeInput): NarrativeModel {
 
   const priorities: string[] = [];
   if (position.status === 'Insufficient evidence')
-    priorities.push('Improve data completeness and add a comparison period so the Board can rely on trend conclusions.');
+    priorities.push('Improve current-value completeness and add comparison, target or tolerance evidence so the Board can rely on position and trend conclusions.');
   if (concerns.length > 0)
     priorities.push(`Address the material concerns above, starting with ${metricName(library, concerns[0].metric_key)}.`);
   if (contradictions.some((c) => c.rule_key === 'availability_up_recovery_down'))
@@ -138,7 +138,7 @@ export function generateNarrative(input: NarrativeInput): NarrativeModel {
   if (contradictions.some((c) => c.rule_key === 'budget_up_outcome_flat'))
     boardActions.push(boardActionFor('redirect_investment', ['cyber_budget', 'control_testing_pass_rate'], 'supporting'));
 
-  const managementNote = `${confidence.note} Board Narrative Confidence is ${confidence.boardNarrativeConfidence}. Based on ${metricCount} selected metric(s), ${comparability} with comparison data. This report is an analytical and executive communication aid, not an audit, certification or substitute for professional judgement.`;
+  const managementNote = `${confidence.note} Board Narrative Confidence is ${confidence.boardNarrativeConfidence}. Based on ${confidence.currentValueCount} analysed metric(s) from ${confidence.selectedMetricCount} selected applicable metric(s), ${comparability} with comparison data. This report is an analytical and executive communication aid, not an audit, certification or substitute for professional judgement.`;
 
   const sections = [
     { key: 'position', heading: 'Overall executive position', body: `${position.status}. ${position.summary}` },

@@ -25,26 +25,49 @@ function brig_storage_dir(): string
  */
 function brig_counter_hit(string $bucket, int $limit, int $windowSeconds): bool
 {
-    if ($limit <= 0) {
+    if ($limit <= 0 || $windowSeconds <= 0) {
         return false;
     }
     $now = brig_now();
     $file = brig_storage_dir() . '/' . hash('sha256', $bucket) . '.json';
-    $state = ['start' => $now, 'count' => 0];
-    if (is_file($file)) {
-        $data = json_decode((string) @file_get_contents($file), true);
-        if (is_array($data) && isset($data['start'], $data['count'])) {
-            $state = $data;
+    $fh = @fopen($file, 'c+b');
+    if ($fh === false || !@flock($fh, LOCK_EX)) {
+        if (is_resource($fh)) {
+            @fclose($fh);
         }
+        error_log('[BRIG] rate-limit counter unavailable for bucket hash ' . basename($file));
+        return false; // fail closed: an unavailable governor must not allow abuse
     }
-    if ($now - (int) $state['start'] >= $windowSeconds) {
-        $state = ['start' => $now, 'count' => 0];
+
+    $allowed = false;
+    try {
+        rewind($fh);
+        $raw = stream_get_contents($fh);
+        $data = is_string($raw) && $raw !== '' ? json_decode($raw, true) : null;
+        $state = is_array($data) && isset($data['start'], $data['count'])
+            ? ['start' => (int) $data['start'], 'count' => (int) $data['count']]
+            : ['start' => $now, 'count' => 0];
+        if ($now - $state['start'] >= $windowSeconds || $state['start'] > $now) {
+            $state = ['start' => $now, 'count' => 0];
+        }
+        if ($state['count'] < $limit) {
+            $state['count']++;
+            $encoded = json_encode($state, JSON_UNESCAPED_SLASHES);
+            if (is_string($encoded)) {
+                rewind($fh);
+                $written = @fwrite($fh, $encoded);
+                if (@ftruncate($fh, strlen($encoded)) && $written === strlen($encoded) && @fflush($fh)) {
+                    $allowed = true;
+                }
+            }
+        }
+    } finally {
+        @flock($fh, LOCK_UN);
+        @fclose($fh);
     }
-    if ((int) $state['count'] >= $limit) {
+    if (!$allowed) {
         return false;
     }
-    $state['count'] = (int) $state['count'] + 1;
-    @file_put_contents($file, json_encode($state), LOCK_EX);
     return true;
 }
 

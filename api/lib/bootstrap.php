@@ -71,7 +71,7 @@ function brig_apply_headers(): void
         if ($origin !== '' && in_array($origin, $allowed, true)) {
             header('Access-Control-Allow-Origin: ' . $origin);
             header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-            header('Access-Control-Allow-Headers: Content-Type, Accept');
+            header('Access-Control-Allow-Headers: Content-Type, Accept, X-BRIG-AI-Session');
             header('Vary: Origin');
         }
     } catch (\Throwable $e) {
@@ -83,10 +83,50 @@ function brig_apply_headers(): void
     }
 }
 
-/** @return array<string,mixed> */
-function brig_read_json_input(): array
+function brig_request_limit(string $name, int $fallback): int
 {
-    $raw = file_get_contents('php://input') ?: '';
+    try {
+        $configured = brig_config()['app']['request_limits'][$name] ?? $fallback;
+        $limit = (int) $configured;
+        return $limit > 0 ? $limit : $fallback;
+    } catch (\Throwable $e) {
+        return $fallback;
+    }
+}
+
+function brig_require_json_content_type(): void
+{
+    // CLI tests do not have HTTP headers. Real HTTP JSON endpoints always require
+    // application/json, including chunked requests with no Content-Length.
+    $contentType = trim((string) ($_SERVER['CONTENT_TYPE'] ?? ''));
+    if (PHP_SAPI !== 'cli' && !preg_match('#^application/json(?:\s*;|$)#i', $contentType)) {
+        brig_error('Content-Type must be application/json.', 415, 'unsupported_media_type');
+    }
+}
+
+/** @return array<string,mixed> */
+function brig_read_json_input(int $maxBytes = 1048576): array
+{
+    if ($maxBytes < 1) {
+        throw new \InvalidArgumentException('JSON body limit must be positive.');
+    }
+    brig_require_json_content_type();
+    $declared = (int) ($_SERVER['CONTENT_LENGTH'] ?? 0);
+    if ($declared > $maxBytes) {
+        brig_error('The request body exceeds the maximum permitted size.', 413, 'request_too_large');
+    }
+    $stream = @fopen('php://input', 'rb');
+    if ($stream === false) {
+        brig_error('The request body could not be read.', 400, 'body_unreadable');
+    }
+    $raw = stream_get_contents($stream, $maxBytes + 1);
+    fclose($stream);
+    if (!is_string($raw)) {
+        brig_error('The request body could not be read.', 400, 'body_unreadable');
+    }
+    if (strlen($raw) > $maxBytes) {
+        brig_error('The request body exceeds the maximum permitted size.', 413, 'request_too_large');
+    }
     if ($raw === '') {
         return [];
     }

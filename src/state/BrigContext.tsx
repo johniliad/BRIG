@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, useReducer } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useReducer, useState } from 'react';
 import type {
   AnalysisResult,
   BoardProfile,
@@ -9,6 +9,9 @@ import type {
 import { METRICS } from '../data/library';
 import { DEFAULT_PROFILE, demoObservations, emptyObservation } from '../data/demo';
 import { analyze } from '../engine/analyze';
+import { clearDraft, loadDraft, saveDraft } from '../services/draft';
+import { stepFromLocation } from '../services/routing';
+import { completenessSummary, type CompletenessSummary } from '../services/validation';
 
 export type WizardStep =
   | 'landing'
@@ -53,6 +56,8 @@ type Action =
   | { type: 'SET_PROFILE'; patch: Partial<BoardProfile> }
   | { type: 'TOGGLE_METRIC'; key: string }
   | { type: 'SET_SELECTED'; keys: string[] }
+  | { type: 'IMPORT_OBSERVATIONS'; keys: string[]; observations: Record<string, MetricObservation> }
+  | { type: 'APPLY_PROVENANCE'; patch: Partial<MetricObservation> }
   | { type: 'PATCH_OBSERVATION'; key: string; patch: Partial<MetricObservation> }
   | { type: 'APPLY_DEMO' }
   | { type: 'RESET' }
@@ -94,11 +99,34 @@ function reducer(state: BrigState, action: Action): BrigState {
       for (const k of action.keys) if (!observations[k]) observations[k] = emptyObservation(k);
       return { ...state, selectedKeys: action.keys, observations };
     }
-    case 'PATCH_OBSERVATION': {
-      const existing = state.observations[action.key] ?? emptyObservation(action.key);
+    case 'IMPORT_OBSERVATIONS':
       return {
         ...state,
-        observations: { ...state.observations, [action.key]: { ...existing, ...action.patch } },
+        selectedKeys: Array.from(new Set([...state.selectedKeys, ...action.keys])),
+        observations: { ...state.observations, ...action.observations },
+        demoActive: false,
+      };
+    case 'APPLY_PROVENANCE': {
+      const observations = { ...state.observations };
+      for (const key of state.selectedKeys) {
+        observations[key] = { ...(observations[key] ?? emptyObservation(key)), ...action.patch };
+      }
+      return { ...state, observations };
+    }
+    case 'PATCH_OBSERVATION': {
+      const existing = state.observations[action.key] ?? emptyObservation(action.key);
+      const dataStatus = action.patch.dataStatus ?? existing.dataStatus;
+      return {
+        ...state,
+        observations: {
+          ...state.observations,
+          [action.key]: {
+            ...existing,
+            ...action.patch,
+            dataStatus,
+            applicable: action.patch.applicable ?? dataStatus !== 'not_applicable',
+          },
+        },
       };
     }
     case 'APPLY_DEMO': {
@@ -149,12 +177,48 @@ interface BrigContextValue {
   analysis: AnalysisResult | null;
   selectedCount: number;
   enteredCount: number;
+  readiness: CompletenessSummary;
+  comparisonLabelRequired: boolean;
+  draftSavedAt: string | null;
+  clearLocalDraft: () => void;
 }
 
 const BrigContext = createContext<BrigContextValue | null>(null);
 
 export function BrigProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const restored = useMemo(() => loadDraft(), []);
+  const initialStep = typeof window !== 'undefined' ? stepFromLocation() : 'landing';
+  const [state, dispatch] = useReducer(reducer, restored
+    ? {
+        ...initialState,
+        step: initialStep,
+        profile: restored.profile,
+        selectedKeys: restored.selectedKeys,
+        observations: restored.observations,
+        privacyMode: restored.privacyMode,
+        demoActive: restored.demoActive,
+      }
+    : { ...initialState, step: initialStep });
+  const [draftSavedAt, setDraftSavedAt] = useState<string | null>(restored?.savedAt ?? null);
+
+  useEffect(() => {
+    if (state.step === 'landing' && state.selectedKeys.length === 0 && !state.demoActive) return;
+    const timer = window.setTimeout(() => {
+      setDraftSavedAt(saveDraft({
+        profile: state.profile,
+        selectedKeys: state.selectedKeys,
+        observations: state.observations,
+        privacyMode: state.privacyMode,
+        demoActive: state.demoActive,
+      }));
+    }, 400);
+    return () => window.clearTimeout(timer);
+  }, [state.step, state.profile, state.selectedKeys, state.observations, state.privacyMode, state.demoActive]);
+
+  const clearLocalDraft = () => {
+    clearDraft();
+    setDraftSavedAt(null);
+  };
 
   const library = METRICS;
   const selectedMetrics = useMemo(
@@ -175,8 +239,16 @@ export function BrigProvider({ children }: { children: React.ReactNode }) {
 
   const enteredCount = state.selectedKeys.filter((k) => {
     const o = state.observations[k];
-    return o && o.current !== null;
+    return o && o.dataStatus === 'available' && o.current !== null;
   }).length;
+  const readiness = useMemo(
+    () => completenessSummary(state.selectedKeys, state.observations, selectedMetrics),
+    [state.selectedKeys, state.observations, selectedMetrics],
+  );
+  const comparisonLabelRequired = state.selectedKeys.some((key) => {
+    const previous = state.observations[key]?.previous;
+    return previous !== null && previous !== undefined;
+  }) && !state.profile.comparisonPeriod.trim();
 
   const value: BrigContextValue = {
     state,
@@ -186,6 +258,10 @@ export function BrigProvider({ children }: { children: React.ReactNode }) {
     analysis,
     selectedCount: state.selectedKeys.length,
     enteredCount,
+    readiness,
+    comparisonLabelRequired,
+    draftSavedAt,
+    clearLocalDraft,
   };
 
   return <BrigContext.Provider value={value}>{children}</BrigContext.Provider>;

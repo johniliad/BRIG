@@ -27,16 +27,16 @@ Built for:
 
 BRIG is **deterministic-first and evidence-based**: the same inputs always produce the same report, and every statement in it is traceable back to user-supplied data. The methodology, the metric library and the rule set are **versioned and stamped into every generated report** (`methodology_version` · `metric_library_version` · `rule_version`), so any report can be tied to the exact rules that produced it. The full write-up lives in [`docs/methodology.md`](docs/methodology.md) and on the in-app **Methodology** page; in detail:
 
-1. **Input model.** A reporting profile (organisation, reporting vs comparison period, audience, currency) plus the selected metrics, each with current and comparison-period values, optional targets/thresholds, a data-quality flag and a free-text note (treated as untrusted data if AI is used).
-2. **Validation.** Types, ranges and units are validated before any analysis runs.
+1. **Input model.** A reporting profile plus selected metrics with an explicit data status. Available metrics require a current value; directionality determines whether targets and two-sided tolerances are required. Missing comparison data requires a reason, not an invented value. The comparison-period label is required only when comparison values are supplied.
+2. **Validation.** Data status, required evidence, types, ranges and units are validated before review. Low-quality data requires an explanation; changed context-dependent metrics require context.
 3. **Trend calculation.** Absolute delta, relative percentage delta, and percentage-point delta for percentage metrics — computed per metric against the comparison period.
 4. **Directionality.** `higher_is_better`, `lower_is_better`, `target_range`, `target_value`, `context_dependent`, `not_directional`. There is no blanket "up is good" or "up is bad": an increase in patching coverage is good, an increase in KEV-listed vulnerabilities is bad, and some metrics only make sense against a target.
 5. **Magnitude bands.** Negligible ≤ 2%, minor ≤ 5%, moderate ≤ 15%, significant ≤ 30%, material > 30% (percentage metrics measured in percentage points). Versioned defaults, configurable.
-6. **Targets and thresholds.** Target breaches and threshold crossings are detected and folded into severity and materiality.
+6. **Targets and tolerances.** Targets describe the desired result; tolerances describe an escalation boundary. They can support current-position assessment without comparison data, but cannot create a trajectory claim.
 7. **Cross-metric relationships.** 53 relationship heuristics (e.g. patching coverage vs exploited-vulnerability exposure) used as analytical signals — never as proof of causality.
 8. **Contradiction and nuance detection.** The engine deliberately hunts for patterns where a simplistic conclusion would mislead the board — e.g. availability up while restore-test success is down, or vulnerability volume down while exploited vulnerabilities are up.
-9. **Materiality scoring.** A versioned weighted formula — board relevance 0.20 · severity 0.20 · magnitude 0.15 · target breach 0.10 · persistence 0.10 · relationship strength 0.10 · business impact 0.10 · regulatory relevance 0.05 — decides which findings are board-material versus operational noise.
-10. **Confidence.** *Board Narrative Confidence* is derived from data completeness, comparability, relationship support and the number of contradictions, graded High / Medium / Low / **Insufficient evidence**, and always reported with its drivers (e.g. "two comparable reporting periods and no external benchmark"). With no comparable data, trend conclusions are capped — the report says so explicitly rather than overclaiming.
+9. **Importance and observed signal.** Methodology v2 separates stable inherent importance from the rule-based observed signal. A current-only value is descriptive; it cannot become a positive/concern finding without comparison, target, tolerance or relationship evidence. A detailed evidence score supports ranking, but labels are primary.
+10. **Confidence.** *Board Narrative Confidence* separately measures current-value completeness, comparison coverage, median history depth, data quality, provenance, relationships and contradictions. With no comparable data, confidence is capped at Low and the report makes no trajectory claim.
 11. **Storyline selection.** 31 story rules with explicit all/any evidence conditions, priority ordering, confidence requirements and counter-signals select one dominant storyline (e.g. *investment without outcome*, *exposure concentration*, *resilience assurance gap*).
 12. **Narrative assembly.** An executive position (application-derived indicator, explicitly not a risk rating) plus headline, executive message, key signals, positive developments, areas of concern, strategic priorities and board actions mapped to four decision categories: *maintain course*, *redirect investment*, *accelerate remediation*, *increase assurance*.
 13. **Chart selection.** Charts are chosen deterministically per metric and storyline (bar, line, grouped bar, before/after, target bar) and rendered with Chart.js — the AI layer never produces charts or numbers.
@@ -48,9 +48,9 @@ BRIG is **deterministic-first and evidence-based**: the same inputs always produ
 
 ---
 
-Turn cybersecurity metrics into a board-ready story. Select the measures you have, enter current and
-comparison-period data, and BRIG analyses trends, directionality, relationships, contradictions,
-materiality and confidence to produce a concise, defensible Board cybersecurity summary with charts,
+Turn cybersecurity metrics into a board-ready story. Select the measures you have, enter current data and any
+available comparison, target or tolerance evidence, and BRIG analyses trends, directionality, relationships and contradictions, then separates
+inherent importance, observed signal strength and evidence confidence to produce a concise, defensible Board cybersecurity summary with charts,
 PDF (print) and PowerPoint output.
 
 BRIG is **deterministic-first**: the complete report works with no external AI. An optional
@@ -65,7 +65,7 @@ BRIG is **deterministic-first**: the complete report works with no external AI. 
 | Area | Status |
 |------|--------|
 | 120-metric knowledge base with full metadata | ✅ `src/data/metric-library.json` (generated) |
-| Deterministic CISO Intelligence Engine | ✅ trend, directionality, materiality, confidence, storyline |
+| Deterministic CISO Intelligence Engine | ✅ trend, directionality, inherent importance, observed signal, confidence, storyline |
 | 53 metric-relationship heuristics | ✅ `src/data/relationships.ts` |
 | 31 story rules + contradiction rules | ✅ `src/engine/storyline.ts`, `contradictions.ts` |
 | Challenge the Story (deterministic) | ✅ `src/engine/challenge.ts` |
@@ -80,7 +80,7 @@ BRIG is **deterministic-first**: the complete report works with no external AI. 
 | Demo / synthetic data mode | ✅ `src/data/demo.ts` |
 | Methodology + disclaimers + privacy modes | ✅ |
 | PHP API + MySQL schema/seed for cPanel | ✅ `api/`, `database/` |
-| Golden scenario tests (A–J + determinism + demo end-to-end) | ✅ `tests/engine.test.ts` (13 passing) |
+| Golden, evidence-contract and workflow tests | ✅ Vitest suite (`tests/*.test.ts`) |
 
 ---
 
@@ -169,9 +169,9 @@ Optional: ReportFacts -> /api/llm/generate.php (PHP proxy)
 
 - **120 metrics** with definition, unit, data type, directionality, board/trend/risk relevance,
   executive meaning, visualisations, related metrics, story tags and caveats.
-- **Directionality-aware trends:** higher/lower-is-better, target, and *context-dependent* metrics are
+- **Directionality-aware trends:** higher/lower-is-better, target value/range, and *context-dependent* metrics are
   never judged with a blanket "up is bad".
-- **Materiality** uses a versioned weighted formula (`src/engine/materiality.ts`).
+- **Evidence model** separates inherent importance, rule-based observed signal strength and confidence (`src/engine/materiality.ts`).
 - **Board Narrative Confidence** reflects evidence quality, not model probability.
 - **Storylines** include improving resilience, hidden deterioration, exposure concentration,
   investment outcomes/gaps, human-risk gap, resilience assurance gap, supplier concentration and more.
@@ -189,7 +189,8 @@ Optional: ReportFacts -> /api/llm/generate.php (PHP proxy)
 - Server-side secrets only: API keys are read from a private config file **outside the web root**
   (`api/lib/config.php`) and never appear in the frontend bundle.
 - Public AI governor: per-IP/minute, per-IP/hour, per-session and global daily limits
-  (`api/lib/ratelimit.php`).
+  (`api/lib/ratelimit.php`), with atomic locked counters. JSON endpoints also enforce
+  application-level request-body limits.
 - `.htaccess` sets security headers, disables directory listing and blocks `/data`, `/database`,
   `/scripts`, `/tests`, dotfiles, and `*.sql`/`*.example.php`.
 - The PHP proxy separates trusted instructions, trusted `ReportFacts`, and untrusted user notes;
@@ -211,12 +212,23 @@ The production server needs **Apache + PHP 8.3+ + MySQL** — **no Node.js runti
 5. Copy `private-config.example.php` to a location **outside** the web root (e.g.
    `/home/USER/brig_private-config/brig.php`) and fill in DB credentials and any provider keys. It is
    loaded automatically, or set `BRIG_CONFIG_PATH`.
+   A file named `brig.php` in the repository root is **not loaded** and is not needed; do not place
+   credentials there.
 6. Ensure `api/` is served by PHP (default on cPanel) and `.htaccess` is enabled.
 7. Smoke-test: `GET /api/health.php`, then open the site. The app works even if the DB is not set up
    (the metric knowledge base is read from `data/metric-library.json`).
 
 > The deterministic analysis runs entirely in the browser, so the core product does not depend on the
 > database. MySQL powers the optional knowledge base and saved-report persistence.
+
+## Workflow conveniences
+
+- Drafts autosave in browser `localStorage` and can be explicitly removed or discarded on reset.
+- Metric data can be imported/exported as CSV, including source system, owner, extraction date and
+  methodology notes.
+- The entry and review stages expose completeness/data-quality warnings; narrative edits are used by
+  every export and by optional server persistence.
+- Hash-based routes work from both a domain root and a subfolder deployment without extra rewrites.
 
 ## AI provider configuration (optional)
 

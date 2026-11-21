@@ -7,7 +7,7 @@ require_once __DIR__ . '/../lib/ai_access.php';
 brig_apply_headers();
 brig_require_method('POST');
 
-$body = brig_read_json_input();
+$body = brig_read_json_input(brig_request_limit('ai_generate', 524288));
 
 // Gate: AI generation requires a valid session obtained by redeeming a one-time token.
 $aiSession = $_SERVER['HTTP_X_BRIG_AI_SESSION'] ?? (is_string($body['ai_session'] ?? null) ? $body['ai_session'] : '');

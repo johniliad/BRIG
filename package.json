@@ -13,6 +13,7 @@
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
     "test": "vitest run",
+    "test:php:core": "php tests/validate-test.php && php tests/ai-payload-test.php && php tests/filepdf_stub_test.php && php tests/request-limit-test.php && php tests/rate-counter-test.php && php tests/ai-cleanup-test.php",
     "test:watch": "vitest",
     "build:library": "node scripts/metric-spec.mjs",
     "export:seed": "node scripts/export-seed.mjs",

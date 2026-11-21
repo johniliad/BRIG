@@ -60,8 +60,8 @@ export function Landing() {
           <h2 className="card-title">How the analysis works</h2>
           <p>
             A <strong>deterministic CISO Intelligence Engine</strong> validates data, computes trends and
-            directionality, evaluates cross-metric relationships and contradictions, scores materiality and
-            confidence, and selects a storyline. Charts and slides are generated deterministically from that model.
+            directionality, evaluates cross-metric relationships and contradictions, separates inherent importance,
+            observed signal strength and evidence confidence, and selects a storyline. Charts and slides are generated deterministically from that model.
           </p>
           <p>
             An optional <strong>Executive Writing Layer</strong> can improve wording only — it never becomes the source

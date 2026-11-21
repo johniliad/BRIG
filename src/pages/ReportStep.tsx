@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useBrig } from '../state/BrigContext';
-import type { AiMeta, AnalysisResult } from '../types';
+import type { AiMeta, AnalysisResult, NarrativeModel } from '../types';
 import { buildBoardReportModel } from '../engine/report';
 import { aiMeta, withAiWording } from '../engine/ai-wording';
-import { formatDelta, formatMetricValue } from '../engine/format';
 import { DEMO_LABEL, BRAND_NAME } from '../data/demo';
-import { exportPptx } from '../services/pptx';
 import { saveReport, fetchServerPdf, type SavedRef } from '../services/reports';
+import { formatTimestamp, reportFilename, reportingWindow } from '../services/formatters';
+import { selectReportKpis } from '../services/report-presentation';
 import { AI_FALLBACK_MESSAGE, enhanceNarrative, fetchAiStatus, unlockAi, type ProviderInfo, type AiDiagnostics } from '../services/llm';
 import { Button, Callout, ConfidencePill, SectionCard, StatusBadge } from '../ui/components';
 import { ChartView } from '../charts/ChartView';
@@ -16,9 +16,8 @@ function downloadJson(analysis: AnalysisResult, privacyMode: string, ai?: AiMeta
   const blob = new Blob([JSON.stringify(model, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  const safe = (analysis.profile.organisationLabel || 'board').replace(/[^a-z0-9]+/gi, '-').toLowerCase();
   a.href = url;
-  a.download = `ciso-board-report-${safe}.json`;
+  a.download = reportFilename(analysis.profile, 'json');
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -289,8 +288,7 @@ function AiPanel() {
   );
 }
 
-function SavePanel() {
-  const { analysis } = useBrig();
+function SavePanel({ model }: { model: AnalysisResult }) {
   const [retention, setRetention] = useState(30);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState<SavedRef | null>(null);
@@ -298,11 +296,10 @@ function SavePanel() {
   const [copied, setCopied] = useState<string | null>(null);
 
   const save = async () => {
-    if (!analysis) return;
     setSaving(true);
     setError(null);
     try {
-      setSaved(await saveReport(analysis, { retentionDays: retention }));
+      setSaved(await saveReport(model, { retentionDays: retention }));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not save the report.');
     } finally {
@@ -338,7 +335,7 @@ function SavePanel() {
             </select>
           </label>
           <div className="form-actions-left">
-            <Button onClick={save} disabled={saving || !analysis}>{saving ? 'Saving…' : 'Save report to server'}</Button>
+            <Button onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save report to server'}</Button>
           </div>
           {error && <Callout tone="warn" title="Not saved">{error}</Callout>}
         </div>
@@ -346,7 +343,7 @@ function SavePanel() {
       {saved && (
         <div className="save-result">
           <Callout tone="good" title="Report saved">
-            <p>Expires {new Date(saved.expires_at).toLocaleString()}. {saved.note}</p>
+            <p>Expires {formatTimestamp(saved.expires_at)}. {saved.note}</p>
           </Callout>
           <div className="save-credentials">
             <div className="cred">
@@ -368,15 +365,20 @@ function SavePanel() {
 }
 
 export function ReportStep() {
-  const { analysis, dispatch, state, library } = useBrig();
+  const { analysis, dispatch, state, library, readiness, comparisonLabelRequired } = useBrig();
   const [editing, setEditing] = useState(false);
-  const [edited, setEdited] = useState<{ headline: string; message: string } | null>(null);
-  const [exporting, setExporting] = useState(false);
+  const [edited, setEdited] = useState<NarrativeModel | null>(null);
+  const [exporting, setExporting] = useState<'pdf' | 'pptx' | null>(null);
+  const [exportNotice, setExportNotice] = useState<{ tone: 'good' | 'warn' | 'danger'; text: string } | null>(null);
 
   useEffect(() => {
     setEditing(false);
     setEdited(null);
   }, [analysis?.metadata.generated_at]);
+
+  if (readiness.errors.length > 0 || comparisonLabelRequired) {
+    return <div className="page"><SectionCard title="Report cannot be generated yet"><Callout tone="danger" title="Required evidence is incomplete"><p>Resolve all required metric fields{comparisonLabelRequired ? ' and add the comparison-period label' : ''} before generating or exporting a report.</p></Callout><Button onClick={() => dispatch({ type: 'SET_STEP', step: 'entry' })}>Return to data entry</Button></SectionCard></div>;
+  }
 
   if (!analysis) {
     return (
@@ -389,52 +391,49 @@ export function ReportStep() {
     );
   }
 
-  const { narrative, ai } = { narrative: analysis.narrative, ai: state.ai };
+  const ai = state.ai;
   const aiView = ai.status === 'done' && ai.enhanced ? ai.enhanced : null;
 
-  // Exports carry the AI-enhanced wording when available (figures unchanged).
-  const exportModel = aiView
+  const aiModel = aiView
     ? withAiWording(analysis, aiView, ai.providerLabel ?? 'AI', ai.providerModel ?? '')
     : analysis;
   const exportAi: AiMeta | undefined = aiView
     ? aiMeta(ai.providerLabel ?? 'AI', ai.providerModel ?? '')
     : undefined;
 
-  const headline = edited?.headline ?? aiView?.executive_headline ?? narrative.headline;
-  const message = edited?.message ?? aiView?.executive_summary ?? narrative.executiveMessage;
+  const exportModel: AnalysisResult = edited ? { ...aiModel, narrative: edited, boardActions: edited.boardActions } : aiModel;
+  const displayNarrative = exportModel.narrative;
 
-  const kpis = analysis.findings.slice(0, 4).map((f) => {
-    const metric = library.find((m) => m.metric_key === f.metric_key);
-    const trend = analysis.trends.find((t) => t.metric_key === f.metric_key);
-    return {
-      key: f.metric_key,
-      name: metric?.name ?? f.metric_key,
-      current: trend ? formatMetricValue(trend.current, metric?.unit ?? 'count', analysis.profile.currency) : '—',
-      delta: trend ? formatDelta(trend.absoluteDelta, metric?.unit ?? 'count', analysis.profile.currency) : '—',
-      direction: trend?.direction ?? 'unknown',
-    };
-  });
+  const kpis = selectReportKpis(analysis, library);
 
   const beginEdit = () => {
-    setEdited({ headline, message });
+    setEdited((current) => current ?? { ...aiModel.narrative, boardActions: aiModel.narrative.boardActions.map((action) => ({ ...action })) });
     setEditing(true);
   };
   const cancelEdit = () => {
     setEditing(false);
-    setEdited(null);
   };
 
+  const setNarrative = (patch: Partial<NarrativeModel>) => setEdited((current) => current ? { ...current, ...patch } : { ...aiModel.narrative, ...patch });
+  const lines = (value: string) => value.split(/\r?\n/).map((item) => item.trim()).filter(Boolean);
+
   const doPptx = async () => {
-    setExporting(true);
+    setExporting('pptx');
+    setExportNotice(null);
     try {
+      const { exportPptx } = await import('../services/pptx');
       await exportPptx(exportModel, exportModel.profile.organisationLabel || 'Organisation', exportAi, kpis);
+      setExportNotice({ tone: 'good', text: 'PowerPoint download created.' });
+    } catch (error) {
+      setExportNotice({ tone: 'danger', text: error instanceof Error ? `PowerPoint export failed: ${error.message}` : 'PowerPoint export failed.' });
     } finally {
-      setExporting(false);
+      setExporting(null);
     }
   };
 
   const doServerPdf = async () => {
-    setExporting(true);
+    setExporting('pdf');
+    setExportNotice(null);
     try {
       const res = await fetchServerPdf(exportModel, exportAi);
       const ct = res.headers.get('content-type') || '';
@@ -442,11 +441,11 @@ export function ReportStep() {
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        const safe = (analysis.profile.organisationLabel || 'board').replace(/[^a-z0-9]+/gi, '-').toLowerCase();
         a.href = url;
-        a.download = `ciso-board-report-${safe}.pdf`;
+        a.download = reportFilename(analysis.profile, 'pdf');
         a.click();
         URL.revokeObjectURL(url);
+        setExportNotice({ tone: 'good', text: 'Server PDF downloaded.' });
       } else if (res.ok) {
         // File_PDF not available → printable HTML fallback in a new window.
         const html = await res.text();
@@ -455,16 +454,17 @@ export function ReportStep() {
           w.document.open();
           w.document.write(html);
           w.document.close();
+          setExportNotice({ tone: 'warn', text: 'File_PDF is unavailable; opened the printable HTML fallback.' });
         } else {
-          window.print();
+          setExportNotice({ tone: 'danger', text: 'The printable fallback was blocked by the browser. Allow popups or use Print / Save as PDF.' });
         }
       } else {
-        window.print();
+        setExportNotice({ tone: 'danger', text: `Server PDF failed (${res.status}). Use Print / Save as PDF instead.` });
       }
-    } catch {
-      window.print();
+    } catch (error) {
+      setExportNotice({ tone: 'danger', text: error instanceof Error ? `Server PDF failed: ${error.message}` : 'Server PDF failed. Use Print / Save as PDF instead.' });
     } finally {
-      setExporting(false);
+      setExporting(null);
     }
   };
 
@@ -477,11 +477,12 @@ export function ReportStep() {
         <div className="toolbar-actions">
           <Button variant="secondary" onClick={editing ? cancelEdit : beginEdit}>{editing ? 'Done editing' : 'Edit narrative'}</Button>
           <Button variant="secondary" onClick={() => window.print()}>Print / Save as PDF</Button>
-          <Button variant="secondary" onClick={doServerPdf} disabled={exporting}>Server PDF (File_PDF)</Button>
-          <Button variant="secondary" onClick={doPptx} disabled={exporting}>{exporting ? 'Building…' : 'Download PPTX'}</Button>
+          <Button variant="secondary" onClick={doServerPdf} disabled={exporting !== null}>{exporting === 'pdf' ? 'Building PDF…' : 'Server PDF (File_PDF)'}</Button>
+          <Button variant="secondary" onClick={doPptx} disabled={exporting !== null}>{exporting === 'pptx' ? 'Building PPTX…' : 'Download PPTX'}</Button>
           <Button variant="secondary" onClick={() => downloadJson(exportModel, state.privacyMode, exportAi)}>Download JSON</Button>
         </div>
       </div>
+      {exportNotice && <Callout tone={exportNotice.tone}>{exportNotice.text}</Callout>}
 
       <article className="board-report" id="board-report">
         <header className="report-header">
@@ -492,7 +493,7 @@ export function ReportStep() {
           <div className="report-period">
             <div className="report-org">{analysis.profile.organisationLabel || 'Organisation'}</div>
             <div className="report-dates">
-              {analysis.profile.comparisonPeriod} → {analysis.profile.reportingPeriod} · {analysis.profile.audience.replace(/_/g, ' ')}
+              {reportingWindow(analysis.profile)} · {analysis.profile.audience.replace(/_/g, ' ')}
             </div>
           </div>
         </header>
@@ -511,17 +512,22 @@ export function ReportStep() {
           <div className="report-edit no-print">
             <label className="field">
               <span className="field-label">Headline</span>
-              <textarea className="input" rows={2} value={edited?.headline ?? ''} onChange={(e) => setEdited({ headline: e.target.value, message: edited?.message ?? '' })} />
+              <textarea className="input" rows={2} value={edited?.headline ?? ''} onChange={(e) => setNarrative({ headline: e.target.value })} />
             </label>
             <label className="field">
               <span className="field-label">Executive message</span>
-              <textarea className="input" rows={5} value={edited?.message ?? ''} onChange={(e) => setEdited({ headline: edited?.headline ?? '', message: e.target.value })} />
+              <textarea className="input" rows={5} value={edited?.executiveMessage ?? ''} onChange={(e) => setNarrative({ executiveMessage: e.target.value })} />
             </label>
+            <label className="field"><span className="field-label">Positive developments — one per line</span><textarea className="input" rows={5} value={(edited?.positiveDevelopments ?? []).join('\n')} onChange={(e) => setNarrative({ positiveDevelopments: lines(e.target.value) })} /></label>
+            <label className="field"><span className="field-label">Areas of concern — one per line</span><textarea className="input" rows={5} value={(edited?.keyRisks ?? []).join('\n')} onChange={(e) => setNarrative({ keyRisks: lines(e.target.value) })} /></label>
+            <label className="field"><span className="field-label">Strategic priorities — one per line</span><textarea className="input" rows={5} value={(edited?.priorities ?? []).join('\n')} onChange={(e) => setNarrative({ priorities: lines(e.target.value) })} /></label>
+            <label className="field"><span className="field-label">Board actions — one per line</span><textarea className="input" rows={5} value={(edited?.boardActions ?? []).map((action) => action.title).join('\n')} onChange={(e) => setNarrative({ boardActions: lines(e.target.value).map((title) => ({ category: 'request_management_action', title, rationale: '', priority: 'primary', relatedMetrics: [] })) })} /></label>
+            <label className="field"><span className="field-label">Management note</span><textarea className="input" rows={3} value={edited?.managementNote ?? ''} onChange={(e) => setNarrative({ managementNote: e.target.value })} /></label>
           </div>
         ) : (
           <>
-            <h1 className="report-headline">{headline}</h1>
-            <p className="report-message">{message}</p>
+            <h1 className="report-headline">{displayNarrative.headline}</h1>
+            <p className="report-message">{displayNarrative.executiveMessage}</p>
             {aiView && (
               <p className="report-ai-note">
                 Executive wording enhanced by {ai.providerLabel} {ai.providerModel}. Figures, findings and calculations are
@@ -551,21 +557,21 @@ export function ReportStep() {
           <div className="report-col">
             <h3>Positive developments</h3>
             <ul>
-              {(aiView?.key_achievements ?? narrative.positiveDevelopments).slice(0, 4).map((p, i) => <li key={i}>{p}</li>)}
-              {(aiView?.key_achievements ?? narrative.positiveDevelopments).length === 0 && <li className="muted">None identified.</li>}
+              {displayNarrative.positiveDevelopments.slice(0, 4).map((p, i) => <li key={i}>{p}</li>)}
+              {displayNarrative.positiveDevelopments.length === 0 && <li className="muted">None identified.</li>}
             </ul>
           </div>
           <div className="report-col">
             <h3>Areas of concern</h3>
             <ul>
-              {(aiView?.key_risks ?? narrative.keyRisks).slice(0, 4).map((p, i) => <li key={i}>{p}</li>)}
-              {(aiView?.key_risks ?? narrative.keyRisks).length === 0 && <li className="muted">None identified.</li>}
+              {displayNarrative.keyRisks.slice(0, 4).map((p, i) => <li key={i}>{p}</li>)}
+              {displayNarrative.keyRisks.length === 0 && <li className="muted">None identified.</li>}
             </ul>
           </div>
           <div className="report-col">
             <h3>Strategic priorities</h3>
             <ul>
-              {(aiView?.strategic_priorities ?? narrative.priorities).slice(0, 4).map((p, i) => <li key={i}>{p}</li>)}
+              {displayNarrative.priorities.slice(0, 4).map((p, i) => <li key={i}>{p}</li>)}
             </ul>
           </div>
         </section>
@@ -573,17 +579,17 @@ export function ReportStep() {
         <section className="report-actions">
           <h3>Board attention / decision</h3>
           <ul>
-            {(aiView?.board_actions ? aiView.board_actions.map((t) => ({ title: t, rationale: '' })) : narrative.boardActions).map((a, i) => (
+            {displayNarrative.boardActions.map((a, i) => (
               <li key={i}><strong>{a.title}</strong>{a.rationale ? ` — ${a.rationale}` : ''}</li>
             ))}
           </ul>
         </section>
 
         <footer className="report-footer">
-          <p className="report-note">{narrative.managementNote}</p>
+          <p className="report-note">{displayNarrative.managementNote}</p>
           <p className="report-meta">
             Methodology {analysis.metadata.methodology_version} · Metric library {analysis.metadata.metric_library_version} · Rules{' '}
-            {analysis.metadata.rule_version} · Generated {new Date(analysis.metadata.generated_at).toLocaleString()}
+            {analysis.metadata.rule_version} · Generated {formatTimestamp(analysis.metadata.generated_at)}
           </p>
           <p className="report-disclaimer">
             {BRAND_NAME} is an independently developed analytical and executive communication aid. It is not a cybersecurity audit,
@@ -595,7 +601,7 @@ export function ReportStep() {
       </article>
 
       <div className="no-print">
-        <SavePanel />
+        <SavePanel model={exportModel} />
       </div>
 
       {state.privacyMode !== 'deterministic' ? (

@@ -74,7 +74,7 @@ RewriteCond %{REQUEST_URI} ^/(403|404|500)\.html$
 RewriteRule ^ - [L]
 
 # 3) Deny every request that does not carry the exact secret.
-RewriteCond %{HTTP:X-Origin-Secret} !^__BRIG_CF_ORIGIN_SECRET__$
+RewriteCond %{HTTP:X-Origin-Secret} !^XXX$
 RewriteRule ^ - [F,L]
 
 # 4) Force HTTPS — AFTER the origin lock (CR1: the lock precedes every other

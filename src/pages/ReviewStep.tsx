@@ -27,7 +27,8 @@ function WhyPanel({ analysis, finding }: { analysis: AnalysisResult; finding: Fi
         {trend.thresholdBreached && <p className="text-warn"><strong>Threshold breached.</strong></p>}
         {mat && (
           <div className="why-materiality">
-            <p><strong>Materiality:</strong> {mat.score}/100 ({mat.band})</p>
+            <p><strong>Inherent importance:</strong> {Math.round(mat.inherentImportance)}/100</p>
+            <p><strong>Observed signal strength:</strong> {mat.signalStrength} <span className="muted">(evidence detail {mat.score}/100)</span></p>
             <ul className="contribution-list">
               {mat.contributions.map((c) => (
                 <li key={c.factor}>
@@ -52,7 +53,7 @@ function FindingCard({ analysis, finding }: { analysis: AnalysisResult; finding:
     <div className={`signal-card signal-${tone}`}>
       <div className="signal-head">
         <span className="signal-kind">{finding.kind === 'positive' ? '▲ Positive' : finding.kind === 'concern' ? '▼ Concern' : '• Neutral'}</span>
-        <span className="signal-unit">{metric?.unit ?? ''} · materiality {Math.round(finding.materiality)}</span>
+        <span className="signal-unit">{metric?.unit ?? ''} · signal {finding.signalStrength} · inherent importance {Math.round(finding.inherentImportance)}</span>
       </div>
       <p className="signal-headline">{finding.headline}</p>
       <p className="signal-evidence">{finding.evidence}</p>
@@ -62,7 +63,11 @@ function FindingCard({ analysis, finding }: { analysis: AnalysisResult; finding:
 }
 
 export function ReviewStep() {
-  const { analysis, dispatch, state, library } = useBrig();
+  const { analysis, dispatch, state, library, readiness, comparisonLabelRequired } = useBrig();
+
+  if (readiness.errors.length > 0 || comparisonLabelRequired) {
+    return <div className="page"><SectionCard title="Required evidence is incomplete"><Callout tone="danger" title="Review is blocked"><p>Complete all required metric fields{comparisonLabelRequired ? ' and add the comparison-period label' : ''} before analysis. This prevents BRIG from inferring meaning from incomplete inputs.</p></Callout><Button onClick={() => dispatch({ type: 'SET_STEP', step: 'entry' })}>Return to data entry</Button></SectionCard></div>;
+  }
 
   if (!analysis) {
     return (
@@ -97,12 +102,12 @@ export function ReviewStep() {
         <p className="muted small">{confidence.drivers.join(' · ')}</p>
       </SectionCard>
 
-      <SectionCard title="Top signals this period" subtitle="Material changes, ranked by materiality. Expand any item to see the evidence.">
+      <SectionCard title="Top signals this period" subtitle="Evidence-supported changes or current-position exceptions, ranked by observed signal detail. Expand any item to see the evidence.">
         <div className="signal-list">
           {findings.slice(0, 6).map((f) => (
             <FindingCard key={f.metric_key} analysis={analysis} finding={f} />
           ))}
-          {findings.length === 0 && <p className="empty-note">No material changes were detected on the selected comparative metrics.</p>}
+          {findings.length === 0 && <p className="empty-note">No evidence-supported positive or concern signals were detected. Current-only values remain descriptive KPIs.</p>}
         </div>
       </SectionCard>
 

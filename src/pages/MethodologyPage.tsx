@@ -1,7 +1,7 @@
 import { useBrig } from '../state/BrigContext';
 import { BRAND_NAME } from '../data/demo';
 import { METRICS, LIBRARY_VERSION } from '../data/library';
-import { MATERIALITY_WEIGHTS, MATERIALITY_VERSION } from '../engine/materiality';
+import { INHERENT_IMPORTANCE_WEIGHTS, MATERIALITY_WEIGHTS, MATERIALITY_VERSION } from '../engine/materiality';
 import { RELATIONSHIP_RULES } from '../data/relationships';
 import { STORY_RULES } from '../engine/storyline';
 import { Button, SectionCard } from '../ui/components';
@@ -36,11 +36,12 @@ export function MethodologyPage() {
 
       <SectionCard title="2. Input data model">
         <p>
-          The operator selects metrics from a library of {METRICS.length} definitions (version{' '}
-          {LIBRARY_VERSION}) and, for each, may enter a <em>current</em> value, a <em>comparison</em>{' '}
-          (previous) value, an optional <em>target</em> and <em>threshold</em>, a data-quality flag, and
-          free-text context. The comparison and reporting periods are captured once on the Board profile and
-          apply uniformly to every metric, so trends are always computed between like-for-like periods.
+          The operator selects metrics from a library of {METRICS.length} definitions (version {LIBRARY_VERSION})
+          and must explicitly identify whether each metric is available, unavailable, not measured or not
+          applicable. Available metrics require a current value. Comparison, target and tolerance evidence are
+          requested according to the metric's directionality; missing comparison data requires a reason rather
+          than an invented value. The reporting-period label is required. A comparison-period label is required
+          only when at least one comparison value is supplied, and then applies uniformly to those values.
         </p>
         <p>
           Each library entry records its unit, data type, and directionality — whether higher is better, lower
@@ -67,14 +68,18 @@ export function MethodologyPage() {
 
       <SectionCard title="4. Materiality">
         <p>
-          Materiality (methodology {MATERIALITY_VERSION}) is a weighted, versioned score in the range 0–100
-          that ranks which findings deserve Board attention. The weights are explicit: board relevance{' '}
-          {MATERIALITY_WEIGHTS.board_relevance}, severity {MATERIALITY_WEIGHTS.severity}, magnitude{' '}
-          {MATERIALITY_WEIGHTS.magnitude}, target breach {MATERIALITY_WEIGHTS.target_breach}, persistence{' '}
-          {MATERIALITY_WEIGHTS.persistence}, relationship strength {MATERIALITY_WEIGHTS.relationship_strength},
-          business impact {MATERIALITY_WEIGHTS.business_impact} and regulatory relevance{' '}
-          {MATERIALITY_WEIGHTS.regulatory_relevance}. Because the weights and formula version are recorded in
-          the report, materiality judgements remain reproducible and open to review.
+          Methodology {MATERIALITY_VERSION} separates three questions. <strong>Inherent importance</strong> is
+          stable metric-library context, using Board relevance {INHERENT_IMPORTANCE_WEIGHTS.board_relevance}, risk
+          relevance {INHERENT_IMPORTANCE_WEIGHTS.risk_relevance}, business impact{' '}
+          {INHERENT_IMPORTANCE_WEIGHTS.business_impact} and regulatory relevance{' '}
+          {INHERENT_IMPORTANCE_WEIGHTS.regulatory_relevance}. <strong>Observed signal strength</strong> is a
+          rule-based label driven only by supplied evidence: movement magnitude, target gap, tolerance breach,
+          persistence and supporting relationships. The detailed evidence score uses weights of magnitude{' '}
+          {MATERIALITY_WEIGHTS.magnitude}, target gap {MATERIALITY_WEIGHTS.target_gap}, tolerance breach{' '}
+          {MATERIALITY_WEIGHTS.tolerance_breach}, persistence {MATERIALITY_WEIGHTS.persistence} and relationship
+          support {MATERIALITY_WEIGHTS.relationship_strength}. Missing evidence contributes zero. A current value
+          without a comparison, target, tolerance or configured relationship remains descriptive and cannot become
+          a positive or concern finding. <strong>Evidence confidence</strong> is calculated separately.
         </p>
       </SectionCard>
 

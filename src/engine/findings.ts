@@ -1,10 +1,15 @@
 import type { Finding, MaterialityResult, MetricDefinition, MetricObservation, TrendResult } from '../types';
 import { formatDelta, formatMetricValue } from './format';
 
-const MATERIAL_FINDING_THRESHOLD = 20; // materiality score floor for inclusion
+const FINDING_SIGNAL_LABELS = new Set(['Moderate', 'Significant', 'Material']);
 
 function describeChange(trend: TrendResult, metric: MetricDefinition, currency: string): string {
-  if (!trend.hasComparison) return 'No comparison period provided.';
+  if (!trend.hasComparison) {
+    const current = formatMetricValue(trend.current, metric.unit, currency);
+    if (trend.thresholdBreached) return `${current}; supplied tolerance breached (current-position assessment only).`;
+    if (trend.targetBreached) return `${current}; supplied target missed (current-position assessment only).`;
+    return `${current}; current position only — no comparison period provided.`;
+  }
   const cur = formatMetricValue(trend.current, metric.unit, currency);
   const prev = formatMetricValue(trend.previous, metric.unit, currency);
   const delta = formatDelta(trend.absoluteDelta, metric.unit, currency);
@@ -20,9 +25,9 @@ function describeChange(trend: TrendResult, metric: MetricDefinition, currency: 
 }
 
 /**
- * Produce material findings from the deterministic analysis. A finding is
- * surfaced only when it is material (magnitude, threshold breach or materiality
- * score), to avoid a long list that dilutes the Board message.
+ * Produce evidence-eligible findings from the deterministic analysis. The
+ * rule-based signal label is primary; the numeric detail and inherent
+ * importance rank eligible findings without making evidence-free metrics eligible.
  */
 export function generateFindings(
   library: Map<string, MetricDefinition>,
@@ -42,12 +47,10 @@ export function generateFindings(
     const mat = materiality.get(key);
     const matScore = mat?.score ?? 0;
 
-    const isMaterialMagnitude = trend.band === 'moderate' || trend.band === 'significant' || trend.band === 'material';
-    const isMaterial = isMaterialMagnitude || trend.thresholdBreached || matScore >= MATERIAL_FINDING_THRESHOLD;
-    if (!isMaterial) continue;
+    if (!mat?.assessable || !FINDING_SIGNAL_LABELS.has(mat.signalStrength)) continue;
 
     let kind: Finding['kind'] = 'neutral';
-    if (trend.thresholdBreached) kind = 'concern';
+    if (trend.thresholdBreached || trend.targetBreached) kind = 'concern';
     else if (trend.interpretation === 'improving') kind = 'positive';
     else if (trend.interpretation === 'deteriorating') kind = 'concern';
     else if (trend.interpretation === 'mixed') kind = 'neutral';
@@ -57,7 +60,10 @@ export function generateFindings(
       obs.target !== null && trend.targetGap !== null
         ? ` Target ${formatMetricValue(obs.target, metric.unit, currency)}; gap ${formatDelta(trend.targetGap, metric.unit, currency)}.`
         : '';
-    const thresholdPart = trend.thresholdBreached ? ' Threshold breached.' : '';
+    const thresholdPart = trend.thresholdBreached ? ' Tolerance breached.' : '';
+    const trajectoryPart = (trend.targetBreached || trend.thresholdBreached) && trend.hasComparison && trend.interpretation === 'improving'
+      ? ' The trajectory is improving, but the current position remains outside the supplied target or tolerance.'
+      : '';
 
     findings.push({
       metric_key: key,
@@ -65,13 +71,20 @@ export function generateFindings(
       direction: trend.direction,
       magnitude: trend.band,
       materiality: matScore,
+      signalStrength: mat.signalStrength,
+      inherentImportance: mat.inherentImportance,
       headline: `${metric.name}: ${change}`,
-      evidence: `${metric.executive_meaning} ${metric.caveats[0] ?? ''}${targetPart}${thresholdPart}`.trim(),
+      evidence: `${metric.executive_meaning} ${metric.caveats[0] ?? ''}${targetPart}${thresholdPart}${trajectoryPart}`.trim(),
       dataQuality: obs.dataQuality,
     });
   }
 
-  // Order by materiality then magnitude.
-  findings.sort((a, b) => b.materiality - a.materiality);
+  const rank = { 'Not assessable': 0, Low: 1, Moderate: 2, Significant: 3, Material: 4 } as const;
+  // The rule-based label is primary; evidence detail and inherent importance break ties.
+  findings.sort((a, b) =>
+    rank[b.signalStrength] - rank[a.signalStrength] ||
+    b.materiality - a.materiality ||
+    b.inherentImportance - a.inherentImportance,
+  );
   return findings;
 }

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useBrig } from './state/BrigContext';
 import type { WizardStep } from './state/BrigContext';
 import { BRAND_NAME, APP_BUILD } from './data/demo';
@@ -13,43 +13,50 @@ import { MethodologyPage } from './pages/MethodologyPage';
 import { DisclaimerPage } from './pages/DisclaimerPage';
 import { SavedReportPage } from './pages/SavedReportPage';
 import { AboutPage } from './pages/AboutPage';
+import { assetUrl } from './services/paths';
+import { navigateToStep, stepFromLocation } from './services/routing';
+import { formatTimestamp } from './services/formatters';
 
 const WIZARD: WizardStep[] = ['profile', 'select', 'entry', 'review', 'report'];
 
 export default function App() {
-  const { state, dispatch } = useBrig();
+  const { state, dispatch, draftSavedAt, clearLocalDraft } = useBrig();
   const { step, privacyMode } = state;
   const inWizard = WIZARD.includes(step);
 
-  // Keep the About view in sync with a real /about URL (and the back button).
+  const pageHeadingRef = useRef<HTMLDivElement>(null);
+
+  // Hash routing works at domain roots and subfolders without extra rewrites.
   useEffect(() => {
-    const sync = () => {
-      if (/\/(about)\/?$/i.test(window.location.pathname)) {
-        dispatch({ type: 'SET_STEP', step: 'about' });
-      }
-    };
-    sync();
-    window.addEventListener('popstate', sync);
-    return () => window.removeEventListener('popstate', sync);
+    const sync = () => dispatch({ type: 'SET_STEP', step: stepFromLocation() });
+    window.addEventListener('hashchange', sync);
+    return () => window.removeEventListener('hashchange', sync);
   }, [dispatch]);
+
+  useEffect(() => {
+    navigateToStep(step, true);
+  }, [step]);
+
+  useEffect(() => {
+    const heading = pageHeadingRef.current?.querySelector<HTMLElement>('h1, h2');
+    heading?.setAttribute('tabindex', '-1');
+    heading?.focus({ preventScroll: true });
+  }, [step]);
 
   const go = (s: WizardStep) => {
     dispatch({ type: 'SET_STEP', step: s });
-    try {
-      if (s !== 'about' && /\/(about)\/?$/i.test(window.location.pathname)) {
-        window.history.pushState({}, '', './');
-      }
-    } catch {
-      /* ignore */
-    }
+    navigateToStep(s);
   };
   const goAbout = () => {
-    dispatch({ type: 'SET_STEP', step: 'about' });
-    try {
-      window.history.pushState({ step: 'about' }, '', 'about');
-    } catch {
-      /* ignore */
-    }
+    go('about');
+  };
+
+  const reset = () => {
+    const hasWork = state.selectedKeys.length > 0;
+    if (hasWork && !window.confirm('Start over and discard the current local draft?')) return;
+    clearLocalDraft();
+    dispatch({ type: 'RESET' });
+    navigateToStep('landing');
   };
 
   const setMode = (mode: 'deterministic' | 'ai_assisted' | 'demo') => {
@@ -124,7 +131,14 @@ export default function App() {
         </div>
       )}
 
-      <main id="main" className="site-main">
+      {draftSavedAt && state.selectedKeys.length > 0 && (
+        <div className="draft-status" role="status">
+          Draft saved locally {formatTimestamp(draftSavedAt)} ·{' '}
+          <button className="link-btn" onClick={clearLocalDraft}>Remove saved draft</button>
+        </div>
+      )}
+
+      <main id="main" className="site-main" ref={pageHeadingRef}>
         {step === 'landing' && <Landing />}
         {step === 'profile' && <ProfileStep />}
         {step === 'select' && <SelectStep />}
@@ -147,7 +161,8 @@ export default function App() {
                 iliadis.net<span className="visually-hidden"> (opens in a new tab)</span>
               </a>{' '}
               ecosystem. It is a Cybersecurity Intelligence Engine that validates data, computes trends and
-              directionality, evaluates cross-metric relationships and contradictions, scores materiality and confidence,
+              directionality, evaluates cross-metric relationships and contradictions, and separates inherent importance,
+              observed signal strength and evidence confidence,
               and selects a storyline.
             </p>
             <p className="footer-note">
@@ -161,11 +176,11 @@ export default function App() {
               {' · '}
               <button className="link-btn" onClick={goAbout}>About</button>
               {' · '}
-              <button className="link-btn" onClick={() => dispatch({ type: 'RESET' })}>Start over</button>
+              <button className="link-btn" onClick={reset}>Start over</button>
               {' · '}
-              <a className="link-btn" href="/THIRD-PARTY-NOTICES.txt">Third-party notices</a>
+              <a className="link-btn" href={assetUrl('THIRD-PARTY-NOTICES.txt')}>Third-party notices</a>
               {' · '}
-              <a className="link-btn" href="/LICENSE.txt">License</a>
+              <a className="link-btn" href={assetUrl('LICENSE.txt')}>License</a>
             </p>
           </div>
 

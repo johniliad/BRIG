@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useBrig } from '../state/BrigContext';
 import type { AnalysisResult } from '../types';
-import { getMetric } from '../data/library';
-import { formatDelta, formatMetricValue } from '../engine/format';
+import { METRICS } from '../data/library';
 import { getReport } from '../services/reports';
+import { normalizeSavedReport } from '../services/report-normalization';
 import { BRAND_NAME } from '../data/demo';
 import { Button, Callout, ConfidencePill, SectionCard, StatusBadge } from '../ui/components';
 import { ChartView } from '../charts/ChartView';
+import { selectReportKpis } from '../services/report-presentation';
+import { reportingWindow } from '../services/formatters';
 
 export function SavedReportPage() {
   const { dispatch } = useBrig();
@@ -25,7 +27,9 @@ export function SavedReportPage() {
       if (!res.model) {
         setError('This saved report has no stored model (it may predate persistence). Ask for a fresh save.');
       } else {
-        setModel(res.model);
+        const normalized = normalizeSavedReport(res.model);
+        if (!normalized) setError('This report uses an unsupported or incomplete saved-report schema. Ask for a fresh export from a compatible BRIG version.');
+        else setModel(normalized);
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not load the report.');
@@ -34,19 +38,7 @@ export function SavedReportPage() {
     }
   };
 
-  const kpis = model
-    ? model.findings.slice(0, 4).map((f) => {
-        const metric = getMetric(f.metric_key);
-        const trend = model.trends.find((t) => t.metric_key === f.metric_key);
-        return {
-          key: f.metric_key,
-          name: metric?.name ?? f.metric_key,
-          current: trend ? formatMetricValue(trend.current, metric?.unit ?? 'count', model.profile.currency) : '—',
-          delta: trend ? formatDelta(trend.absoluteDelta, metric?.unit ?? 'count', model.profile.currency) : '—',
-          direction: trend?.direction ?? 'unknown',
-        };
-      })
-    : [];
+  const kpis = model ? selectReportKpis(model, METRICS) : [];
 
   return (
     <div className="page">
@@ -80,7 +72,7 @@ export function SavedReportPage() {
             <div className="report-period">
               <div className="report-org">{model.profile.organisationLabel || 'Organisation'}</div>
               <div className="report-dates">
-                {model.profile.comparisonPeriod} → {model.profile.reportingPeriod} · {model.profile.audience.replace(/_/g, ' ')}
+                {reportingWindow(model.profile)} · {model.profile.audience.replace(/_/g, ' ')}
               </div>
             </div>
           </header>

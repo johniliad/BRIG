@@ -23,6 +23,14 @@ function brig_default_config(): array
             'env' => 'production',
             // Additional allowed origins for the public API (same-origin is always allowed).
             'allowed_origins' => [],
+            // Raw JSON request limits, enforced before decoding. Endpoint code
+            // selects the appropriate named limit when reading php://input.
+            'request_limits' => [
+                'small' => 8192,
+                'analysis' => 1048576,
+                'ai_generate' => 524288,
+                'report' => 2097152,
+            ],
         ],
         'db' => [
             'dsn' => null,   // e.g. 'mysql:host=localhost;dbname=brig;charset=utf8mb4'
@@ -51,6 +59,10 @@ function brig_default_config(): array
             // outside the web root). Leave null to auto-detect (~/brig-ai-tokens,
             // then api/storage, then the system temp dir).
             'token_store_path' => null,
+            // Opportunistic cleanup is bounded per request; the CLI cleanup tool
+            // can sweep the complete store. Used markers are removed only when
+            // their hashes are no longer in the active allow-list.
+            'cleanup_scan_limit' => 50,
         ],
         'providers' => [
             'gemini' => [

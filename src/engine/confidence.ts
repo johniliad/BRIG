@@ -1,19 +1,14 @@
 import type { ConfidenceLevel, ConfidenceResult, DataQuality } from '../types';
 
 export interface ConfidenceInput {
-  metricCount: number;
-  /** Number of selected metrics that have a valid current + previous comparison. */
+  selectedMetricCount: number;
+  currentValueCount: number;
   comparableCount: number;
-  /** Longest history series available across metrics (>=2 when any comparison). */
-  maxPeriods: number;
-  /** 0–1 completeness of current values + quality weighting. */
-  dataCompleteness: number;
-  /** Count of triggered supportive relationships. */
+  medianPeriods: number;
   relationshipSupport: number;
-  /** Count of triggered contradictions. */
   contradictionCount: number;
-  /** Number of metrics entered with high data quality. */
-  highQualityCount: number;
+  qualityScore: number;
+  provenanceShare: number;
 }
 
 function levelFor(score: number): ConfidenceLevel {
@@ -28,69 +23,49 @@ function capForContradictions(level: ConfidenceLevel, contradictionCount: number
   return level;
 }
 
-/**
- * Board Narrative Confidence is based on EVIDENCE QUALITY, not model
- * probability (spec §22.1). It is deterministic and explanatory.
- */
 export function computeConfidence(input: ConfidenceInput): ConfidenceResult {
   const {
-    metricCount,
-    comparableCount,
-    maxPeriods,
-    dataCompleteness,
-    relationshipSupport,
-    contradictionCount,
-    highQualityCount,
+    selectedMetricCount, currentValueCount, comparableCount, medianPeriods,
+    relationshipSupport, contradictionCount, qualityScore, provenanceShare,
   } = input;
-
   const drivers: string[] = [];
-  let score = 0;
+  const completeness = selectedMetricCount > 0 ? currentValueCount / selectedMetricCount : 0;
+  const comparisonCoverage = selectedMetricCount > 0 ? comparableCount / selectedMetricCount : 0;
+  const historyDepth = Math.min(Math.max(medianPeriods - 1, 0) / 3, 1);
+  const independentRelationshipSupport = Math.min(relationshipSupport / 4, 1);
 
-  score += dataCompleteness * 40;
-  drivers.push(`${Math.round(dataCompleteness * 100)}% data completeness across selected metrics`);
-
-  const comparableShare = metricCount > 0 ? Math.min(comparableCount / metricCount, 1) : 0;
-  score += comparableShare * 25;
-  drivers.push(`${comparableCount} of ${metricCount} selected metrics have a comparison period`);
-
-  const relScore = Math.min(relationshipSupport / 4, 1) * 20;
-  score += relScore;
-  if (relationshipSupport > 0) drivers.push(`${relationshipSupport} supporting cross-metric relationship signal(s)`);
-
-  const qualityShare = metricCount > 0 ? Math.min(highQualityCount / metricCount, 1) : 0;
-  score += qualityShare * 15;
-  if (highQualityCount > 0) drivers.push(`${highQualityCount} metric(s) entered with high data quality`);
-
-  if (contradictionCount > 0) {
-    score -= Math.min(contradictionCount * 5, 20);
-    drivers.push(`${contradictionCount} contradictory signal(s) reduce confidence`);
-  }
-
+  let score = completeness * 25 + comparisonCoverage * 25 + historyDepth * 15 + qualityScore * 20 + provenanceShare * 10 + independentRelationshipSupport * 5;
+  if (contradictionCount > 0) score -= Math.min(contradictionCount * 5, 20);
   score = Math.max(0, Math.min(100, score));
+
+  drivers.push(`${currentValueCount} of ${selectedMetricCount} selected applicable metrics have a current value`);
+  drivers.push(`${comparableCount} of ${selectedMetricCount} selected applicable metrics have a comparison period`);
+  drivers.push(`Median history depth is ${medianPeriods} period(s)`);
+  drivers.push(`Data-quality score is ${Math.round(qualityScore * 100)}% across entered metrics`);
+  if (provenanceShare > 0) drivers.push(`${Math.round(provenanceShare * 100)}% of entered metrics include core provenance`);
+  if (relationshipSupport > 0) drivers.push(`${relationshipSupport} supporting cross-metric relationship signal(s)`);
+  if (contradictionCount > 0) drivers.push(`${contradictionCount} contradictory signal(s) reduce confidence`);
 
   let level = levelFor(score);
   let boardNarrativeConfidence = capForContradictions(level, contradictionCount);
-
-  // If there is no comparison data at all, trend-based conclusions cannot be strong.
-  if (comparableCount === 0) {
-    boardNarrativeConfidence = dataCompleteness > 0.2 ? 'Low' : 'Insufficient evidence';
-    level = boardNarrativeConfidence;
-  }
-
-  const periodWord = maxPeriods <= 1 ? 'a single period' : `${maxPeriods} comparable reporting periods`;
-  const benchmarkWord = 'no external benchmark';
-  const note = `Confidence is ${boardNarrativeConfidence.toLowerCase()} because the analysis uses ${periodWord} and ${benchmarkWord}.`;
+  if (currentValueCount === 0) boardNarrativeConfidence = 'Insufficient evidence';
+  else if (comparableCount === 0 && boardNarrativeConfidence !== 'Insufficient evidence') boardNarrativeConfidence = 'Low';
+  level = boardNarrativeConfidence;
 
   return {
     level,
     boardNarrativeConfidence,
     score: Math.round(score),
     drivers,
-    note,
-    comparablePeriods: maxPeriods,
-    metricCount,
+    note: `Confidence is ${boardNarrativeConfidence.toLowerCase()} based on current-value completeness, comparison coverage, median history depth, data quality and provenance; no external benchmark is assumed.`,
+    comparablePeriods: medianPeriods,
+    metricCount: currentValueCount,
+    selectedMetricCount,
+    currentValueCount,
     relationshipSupport,
-    dataCompleteness: Math.round(dataCompleteness * 100) / 100,
+    dataCompleteness: Math.round(completeness * 100) / 100,
+    comparisonCoverage: Math.round(comparisonCoverage * 100) / 100,
+    dataQualityScore: Math.round(qualityScore * 100) / 100,
     contradictionCount,
   };
 }

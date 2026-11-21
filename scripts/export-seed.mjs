@@ -95,7 +95,7 @@ L.push("('openrouter', 'OpenRouter', 'openai/gpt-4o-mini', 'https://openrouter.a
 L.push('');
 
 L.push('INSERT INTO methodology_versions (methodology_version, metric_library_version, rule_version, materiality_weights_json, changelog) VALUES');
-L.push(`('1.0.0', ${esc(libraryVersion)}, '1.0.0', ${jsonSql({ board_relevance: 0.2, severity: 0.2, magnitude: 0.15, target_breach: 0.1, persistence: 0.1, relationship_strength: 0.1, business_impact: 0.1, regulatory_relevance: 0.05 })}, 'Initial release.');`);
+L.push(`('2.0.0', ${esc(libraryVersion)}, '1.0.0', ${jsonSql({ inherent_importance: { board_relevance: 0.35, risk_relevance: 0.35, business_impact: 0.2, regulatory_relevance: 0.1 }, observed_signal_detail: { magnitude: 0.3, target_gap: 0.2, tolerance_breach: 0.25, persistence: 0.15, relationship_strength: 0.1 } })}, 'Separates inherent importance, rule-based observed signal strength and evidence confidence; missing evidence contributes zero.');`);
 L.push('');
 L.push("INSERT INTO application_settings (setting_key, setting_value) VALUES ('public_demo_mode', 'true'), ('ai_enabled', 'false');");
 L.push('');

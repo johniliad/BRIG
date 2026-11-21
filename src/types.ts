@@ -131,6 +131,8 @@ export type ReportStyle = 'concise' | 'strategic' | 'analytical' | 'reassuring' 
 export type PrivacyMode = 'deterministic' | 'ai_assisted' | 'demo';
 
 export type DataQuality = 'high' | 'medium' | 'low';
+export type DataStatus = 'not_set' | 'available' | 'temporarily_unavailable' | 'not_measured' | 'not_applicable';
+export type SignalStrength = 'Not assessable' | 'Low' | 'Moderate' | 'Significant' | 'Material';
 
 export interface BoardProfile {
   organisationLabel: string;
@@ -149,6 +151,8 @@ export interface BoardProfile {
 /** A single metric observation entered by the user for one reporting period. */
 export interface MetricObservation {
   metric_key: string;
+  /** Explicit availability state. `applicable` is retained for saved-report compatibility. */
+  dataStatus: DataStatus;
   applicable: boolean;
   /** Current reporting-period value. */
   current: number | null;
@@ -157,14 +161,25 @@ export interface MetricObservation {
   /** Optional earlier historical values (oldest→newest) for persistence. */
   history: number[];
   target: number | null;
-  /** Acceptable threshold (e.g. breach limit) if the user supplies one. */
+  /** Direction-specific acceptable floor/ceiling for higher/lower-is-better metrics. */
   threshold: number | null;
+  /** Two-sided tolerance for target-value and target-range metrics. */
+  lowerThreshold: number | null;
+  upperThreshold: number | null;
+  /** Reason comparison evidence is unavailable. Required when an available metric has no comparison. */
+  comparisonMissingReason: string;
   /** Optional user-supplied, documented benchmark value. */
   benchmark: number | null;
   benchmarkSource?: string;
   /** Free-text note. Treated as untrusted content by the LLM layer. */
   note: string;
   dataQuality: DataQuality;
+  /** Optional evidence provenance retained in drafts and report exports. */
+  sourceSystem?: string;
+  reportingOwner?: string;
+  extractionDate?: string;
+  methodologyNote?: string;
+  provenanceConfidence?: DataQuality;
 }
 
 export type ReportStatus =
@@ -203,6 +218,9 @@ export interface TrendResult {
   /** Directional interpretation: is change improvement/deterioration/neutral? */
   interpretation: 'improving' | 'deteriorating' | 'stable' | 'mixed' | 'unknown';
   targetGap: number | null;
+  hasTargetEvidence: boolean;
+  targetBreached: boolean;
+  hasThresholdEvidence: boolean;
   thresholdBreached: boolean;
   /** Count of consecutive periods moving in a consistent direction. */
   persistencePeriods: number;
@@ -219,7 +237,11 @@ export interface MaterialityContribution {
 
 export interface MaterialityResult {
   metric_key: string;
+  /** Evidence-derived observed signal score. Kept as `score` for export compatibility. */
   score: number; // 0–100
+  signalStrength: SignalStrength;
+  assessable: boolean;
+  inherentImportance: number; // 0–100, metric-library based
   contributions: MaterialityContribution[];
   band: MagnitudeBand;
 }
@@ -230,6 +252,8 @@ export interface Finding {
   direction: TrendDirection;
   magnitude: MagnitudeBand;
   materiality: number;
+  signalStrength: SignalStrength;
+  inherentImportance: number;
   headline: string;
   evidence: string;
   dataQuality: DataQuality;
@@ -264,8 +288,12 @@ export interface ConfidenceResult {
   note: string;
   comparablePeriods: number;
   metricCount: number;
+  selectedMetricCount: number;
+  currentValueCount: number;
   relationshipSupport: number;
   dataCompleteness: number; // 0–1
+  comparisonCoverage: number; // 0–1
+  dataQualityScore: number; // 0–1
   contradictionCount: number;
 }
 
@@ -358,6 +386,8 @@ export interface ExecutivePosition {
 }
 
 export interface ReportMetadata {
+  schema_version: number;
+  application_version: string;
   methodology_version: string;
   metric_library_version: string;
   rule_version: string;
@@ -398,7 +428,7 @@ export interface ReportFacts {
   findings: Array<{ metric_key: string; kind: string; headline: string }>;
   relationships: Array<{ rule_key: string; interpretation: string }>;
   contradictions: Array<{ rule_key: string; title: string; explanation: string }>;
-  materiality: Array<{ metric_key: string; score: number; band: MagnitudeBand }>;
+  materiality: Array<{ metric_key: string; score: number; band: MagnitudeBand; signalStrength: SignalStrength; inherentImportance: number }>;
   confidence_detail: {
     level: ConfidenceLevel;
     board_narrative_confidence: ConfidenceLevel;
@@ -431,6 +461,16 @@ export interface AnalysisResult {
   facts: ReportFacts;
   metadata: ReportMetadata;
   challenge: ChallengeResult;
+  provenance: Array<{
+    metric_key: string;
+    sourceSystem: string;
+    reportingOwner: string;
+    extractionDate: string;
+    methodologyNote: string;
+    confidence: DataQuality;
+    benchmark: number | null;
+    benchmarkSource: string;
+  }>;
 }
 
 export interface ChallengeResult {
@@ -454,6 +494,8 @@ export interface AiMeta {
 }
 
 export interface BoardReportModel {
+  schema_version: number;
+  application_version: string;
   facts: ReportFacts;
   analysis: {
     findings: Finding[];
@@ -472,6 +514,7 @@ export interface BoardReportModel {
   };
   metadata: ReportMetadata;
   ai: AiMeta;
+  provenance: AnalysisResult['provenance'];
 }
 
 

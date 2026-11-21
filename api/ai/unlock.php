@@ -19,7 +19,7 @@ if (!brig_counter_hit('ai-unlock:' . brig_client_ip(), $perMinute, 60)) {
     brig_error('Too many unlock attempts. Please wait a minute and try again.', 429, 'rate_limited');
 }
 
-$body = brig_read_json_input();
+$body = brig_read_json_input(brig_request_limit('small', 8192));
 $token = isset($body['token']) ? (string) $body['token'] : '';
 if ($token === '') {
     brig_error('An access token is required.', 400, 'missing_token');

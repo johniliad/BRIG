@@ -18,6 +18,12 @@ return [
         'env' => 'production',
         // Extra origins allowed to call the API (same-origin is always allowed).
         'allowed_origins' => [],
+        'request_limits' => [
+            'small' => 8192,
+            'analysis' => 1048576,
+            'ai_generate' => 524288,
+            'report' => 2097152,
+        ],
     ],
 
     // MySQL persistence (for saved reports / DB-backed knowledge base).
@@ -35,6 +41,7 @@ return [
         'per_ip_reports_per_hour' => 20,
         'per_session_ai_regenerations' => 20,
         'global_daily_requests' => 300,
+        // Applied to the bounded provider prompt, not the complete stored ReportFacts model.
         'max_input_tokens' => 6000,
         'max_output_tokens' => 1200,
     ],
@@ -44,6 +51,13 @@ return [
     // path or api/vendor/File/PDF.php.
     'pdf' => [
         'file_pdf_path' => null, // e.g. '/home/USER/php/File/PDF.php'
+    ],
+
+    'ai' => [
+        'session_ttl_hours' => 3,
+        'redeem_per_minute' => 20,
+        'token_store_path' => null,
+        'cleanup_scan_limit' => 50,
     ],
 
     // Enable only the providers you are authorised to use. Keys are server-side.

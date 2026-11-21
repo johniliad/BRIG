@@ -1,5 +1,63 @@
 # Changelog
 
+## 2026-11-21 — Bounded AI wording payload
+
+- Reduced the provider prompt to a bounded executive-writing evidence view: up to eight prioritized findings, their referenced metrics/numbers, and bounded relationships, contradictions, priorities and actions.
+- Kept the complete deterministic `ReportFacts` model in BRIG while preventing AI prompt size and provider cost from growing with every selected metric.
+- Aligned AI numeric-output validation with the exact compact evidence sent to the provider.
+- Added regression coverage proving a full-size report remains below the configured 6,000-token AI input budget.
+- Bumped the visible client build identifier to `2026-11-21.3`.
+
+## 2026-11-21 — Demo validation correction
+
+- Added the required fictional business context to the context-dependent cyber-budget demo metric.
+- Added a regression test requiring every bundled demo observation to pass the same mandatory validation used by the manual workflow.
+- Bumped the visible client build identifier to `2026-11-21.2`.
+
+## Unreleased
+
+### Fixed
+- Selecting the first metric no longer triggers the application error boundary. The local-draft timestamp formatter
+  used an invalid `Intl.DateTimeFormat` option combination (`dateStyle`/`timeStyle` with `timeZoneName`). Timestamp
+  formatting now uses compatible explicit fields and fails safely to ISO output.
+
+### Added
+- Browser draft autosave/restore, CSV metric import/export, provenance capture, completeness summaries,
+  grouped data entry, deep-linkable hash routes, an application error boundary and richer export status.
+- Editable Board-report narrative sections whose wording is consistently used by JSON, PDF, PPTX and
+  saved-report persistence.
+- Application-level JSON request limits, AI token-store cleanup tooling and regression tests for API
+  contracts, concurrent rate counters, cleanup behavior and workflow services.
+- Explicit metric data status, conditional analytical requirements, comparison-missing reasons, two-sided
+  target/tolerance support and evidence-aware regression tests.
+
+### Changed
+- Saved-report retrieval now accepts credentials in a JSON `POST` body instead of URL query parameters.
+- File-based rate-limit counters now use a single locked read-modify-write transaction.
+- Expired saved reports are physically deleted during save/open traffic; expired AI sessions and retired
+  token-batch markers are cleaned up safely.
+- PPTX generation is lazy-loaded and export filenames follow `CISO_Board_Report_<period>.<ext>`.
+- Analytical methodology is now version 2.0.0: stable inherent importance, rule-based observed signal strength
+  and evidence confidence are separate. Missing evidence contributes zero; current-only metrics remain
+  descriptive and cannot become positive/concern findings.
+- Confidence now measures completeness over all selected applicable metrics, comparison coverage, median
+  history depth, data quality and provenance. Demo history no longer structurally duplicates the previous period.
+- Profile and entry fields now state whether they affect findings, confidence, formatting, narrative framing or
+  report metadata. Required analytical fields block review until resolved.
+- The reporting-period label remains mandatory, while the comparison-period label is required only when comparison
+  values are supplied; current-position-only reports no longer display a fictional previous period.
+- Optional earlier history and sourced benchmark context are now available in the UI and CSV. History affects
+  persistence/confidence; benchmark context is explicitly non-analytical in methodology 2.0.
+- Saved reports and JSON exports now carry schema/application versions and compatible older reports are normalized
+  before display. AI-reworded Board actions retain deterministic category, rationale, priority and metric mapping.
+- Confidence de-duplicates overlapping relationship support by metric pair; storyline ties use supporting evidence
+  strength after governed rule priority. Descriptive current-only values remain visible as KPI tiles without being
+  promoted into findings.
+
+### Security / operations
+- Confirmed the repository-root `brig.php` is not a supported config location and is not needed. Use
+  `BRIG_CONFIG_PATH`, `~/brig_private-config/brig.php`, or `private-config/brig.php` instead.
+
 All notable changes to BRIG — CISO Board Reporting Intelligence Generator.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning follows

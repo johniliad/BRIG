@@ -1,4 +1,5 @@
 import type { ReportFacts } from '../types';
+import { apiUrl } from './paths';
 
 /**
  * Client for the optional Executive Writing Layer. It ONLY sends ReportFacts
@@ -45,13 +46,8 @@ export interface EnhanceOptions {
   provider?: string;
 }
 
-function apiBase(): string {
-  // Same-origin by default; Vite dev server proxies /api to the PHP server.
-  return '';
-}
-
 export async function fetchAiStatus(): Promise<{ providers: ProviderInfo[]; diagnostics: AiDiagnostics | null }> {
-  const res = await fetch(`${apiBase()}/api/llm/providers.php`, { headers: { Accept: 'application/json' } });
+  const res = await fetch(apiUrl('llm/providers.php'), { headers: { Accept: 'application/json' } });
   if (!res.ok) throw new Error(`Providers request failed (${res.status})`);
   const json = await res.json();
   const diagnostics =
@@ -70,7 +66,7 @@ export interface UnlockResult {
 export async function unlockAi(token: string): Promise<UnlockResult> {
   let res: Response;
   try {
-    res = await fetch(`${apiBase()}/api/ai/unlock.php`, {
+    res = await fetch(apiUrl('ai/unlock.php'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({ token }),
@@ -97,7 +93,7 @@ export async function enhanceNarrative(
 ): Promise<{ enhanced: EnhancedNarrative; validated: boolean; providerLabel: string; providerModel: string }> {
   let res: Response;
   try {
-    res = await fetch(`${apiBase()}/api/llm/generate.php`, {
+    res = await fetch(apiUrl('llm/generate.php'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

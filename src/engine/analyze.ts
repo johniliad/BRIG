@@ -20,25 +20,34 @@ import { deriveExecutivePosition } from './position';
 import { challengeStory } from './challenge';
 import { buildCharts } from './charts';
 import { generateNarrative } from './narrative';
-import { buildReportFacts, METHODOLOGY_VERSION, RULE_VERSION } from './report';
+import { APPLICATION_VERSION, buildReportFacts, METHODOLOGY_VERSION, REPORT_SCHEMA_VERSION, RULE_VERSION } from './report';
 import { LIBRARY_VERSION } from '../data/library';
+import { reportingWindow } from '../services/formatters';
 
 /**
  * The CISO Intelligence Engine orchestrator. Fully deterministic and usable
  * with no external LLM (R1). Order of operations follows spec §Step 5.
  */
 export function analyze(input: AnalysisInput): AnalysisResult {
-  const { profile, observations, library } = input;
+  const { profile, library } = input;
+  const observations = input.observations.map((observation) => ({
+    ...observation,
+    dataStatus: observation.dataStatus ?? (observation.applicable === false ? 'not_applicable' : observation.current !== null ? 'available' : 'not_set'),
+    lowerThreshold: observation.lowerThreshold ?? null,
+    upperThreshold: observation.upperThreshold ?? null,
+    comparisonMissingReason: observation.comparisonMissingReason ?? '',
+  }));
   const currency = profile.currency || 'EUR';
 
   const libraryMap = new Map<string, MetricDefinition>(library.map((m) => [m.metric_key, m]));
   const observationsMap = new Map<string, MetricObservation>();
   for (const o of observations) observationsMap.set(o.metric_key, o);
 
-  // Selected = metrics with an entered current value.
+  const applicable = observations.filter((o) => o.applicable && o.dataStatus !== 'not_applicable');
+  // Analysed = applicable metrics with an available, finite current value.
   const selected: Array<{ def: MetricDefinition; obs: MetricObservation }> = [];
-  for (const o of observations) {
-    if (!o.applicable) continue;
+  for (const o of applicable) {
+    if (o.dataStatus !== 'available') continue;
     if (o.current === null || Number.isNaN(o.current)) continue;
     const def = libraryMap.get(o.metric_key);
     if (!def) continue;
@@ -64,35 +73,36 @@ export function analyze(input: AnalysisInput): AnalysisResult {
   const findings = generateFindings(libraryMap, observationsMap, trendsMap, materialityMap, currency);
   const contradictions = evaluateContradictions(trendsMap, observationsMap);
   const metricCount = selected.length;
+  const selectedMetricCount = applicable.length;
 
   const comparableCount = Array.from(trendsMap.values()).filter((t) => t.hasComparison).length;
-  const maxPeriods = selected.reduce((max, { obs }) => {
-    const len = [...obs.history, obs.previous, obs.current].filter((v) => v !== null && v !== undefined).length;
-    return Math.max(max, len);
-  }, 1);
-
-  const highQualityCount = selected.filter(({ obs }) => obs.dataQuality === 'high').length;
-  const dataCompleteness =
-    metricCount > 0 ? selected.reduce((sum, { obs }) => sum + qualityWeight(obs.dataQuality), 0) / metricCount : 0;
+  const periodCounts = selected.map(({ obs }) => [...obs.history, obs.previous, obs.current].filter((v) => v !== null && v !== undefined).length).sort((a, b) => a - b);
+  const medianPeriods = periodCounts.length === 0 ? 0 : periodCounts[Math.floor((periodCounts.length - 1) / 2)];
+  const qualityScore = metricCount > 0 ? selected.reduce((sum, { obs }) => sum + qualityWeight(obs.dataQuality), 0) / metricCount : 0;
+  const provenanceShare = metricCount > 0
+    ? selected.filter(({ obs }) => Boolean(obs.sourceSystem?.trim() && obs.reportingOwner?.trim() && obs.extractionDate?.trim())).length / metricCount
+    : 0;
 
   const confidence: ConfidenceResult = computeConfidence({
-    metricCount,
+    selectedMetricCount,
+    currentValueCount: metricCount,
     comparableCount,
-    maxPeriods,
-    dataCompleteness,
+    medianPeriods,
     relationshipSupport: relationshipEval.supportCount,
     contradictionCount: contradictions.length,
-    highQualityCount,
+    qualityScore,
+    provenanceShare,
   });
 
   const storyEval = evaluateStoryRules(trendsMap, observationsMap, metricCount);
   const primary = storyEval.primary;
 
-  const position = deriveExecutivePosition(primary, findings, confidence, comparableCount, metricCount);
+  const hasPositionEvidence = Array.from(trendsMap.values()).some((trend) => trend.hasTargetEvidence || trend.hasThresholdEvidence);
+  const position = deriveExecutivePosition(primary, findings, confidence, comparableCount, metricCount, hasPositionEvidence);
 
   const challenge = challengeStory(primary, contradictions, trendsMap, libraryMap);
 
-  const reportingLabel = `${profile.comparisonPeriod || 'Previous'} → ${profile.reportingPeriod || 'Current'}`;
+  const reportingLabel = reportingWindow(profile);
   const charts = buildCharts(libraryMap, observationsMap, trendsMap, materialityMap, findings, primary, reportingLabel, currency);
 
   const narrative = generateNarrative({
@@ -111,6 +121,8 @@ export function analyze(input: AnalysisInput): AnalysisResult {
   const boardActions: BoardAction[] = narrative.boardActions;
 
   const metadata: ReportMetadata = {
+    schema_version: REPORT_SCHEMA_VERSION,
+    application_version: APPLICATION_VERSION,
     methodology_version: METHODOLOGY_VERSION,
     metric_library_version: LIBRARY_VERSION,
     rule_version: RULE_VERSION,
@@ -135,6 +147,16 @@ export function analyze(input: AnalysisInput): AnalysisResult {
     charts,
     narrative,
     challenge,
+    provenance: selected.map(({ def, obs }) => ({
+      metric_key: def.metric_key,
+      sourceSystem: obs.sourceSystem?.trim() ?? '',
+      reportingOwner: obs.reportingOwner?.trim() ?? '',
+      extractionDate: obs.extractionDate?.trim() ?? '',
+      methodologyNote: obs.methodologyNote?.trim() ?? '',
+      confidence: obs.provenanceConfidence ?? obs.dataQuality,
+      benchmark: obs.benchmark,
+      benchmarkSource: obs.benchmarkSource?.trim() ?? '',
+    })),
   };
 
   const facts = buildReportFacts(partial, selected, trendsMap, materialityMap, currency);

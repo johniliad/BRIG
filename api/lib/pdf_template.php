@@ -24,7 +24,9 @@ function brig_render_report_html(array $m): string
     $meta = $m['metadata'] ?? [];
 
     $org = brig_pdf_e($profile['organisationLabel'] ?? 'Organisation');
-    $period = brig_pdf_e(($profile['comparisonPeriod'] ?? '') . ' → ' . ($profile['reportingPeriod'] ?? ''));
+    $comparison = trim((string) ($profile['comparisonPeriod'] ?? ''));
+    $current = trim((string) ($profile['reportingPeriod'] ?? 'Current period'));
+    $period = brig_pdf_e($comparison !== '' ? $comparison . ' → ' . $current : $current);
     $audience = brig_pdf_e(str_replace('_', ' ', (string) ($profile['audience'] ?? 'general board')));
     $status = brig_pdf_e($pos['status'] ?? '');
     $confidence = brig_pdf_e($conf['boardNarrativeConfidence'] ?? '');
@@ -80,7 +82,8 @@ function brig_render_report_html(array $m): string
     $note = brig_pdf_e($narr['managementNote'] ?? '');
 
     // AI disclosure (only when the wording was AI-enhanced).
-    $ai = is_array($m['ai'] ?? null) ? $m['ai'] : [];
+    $ai = is_array($model['ai'] ?? null) ? $model['ai'] : [];
+    $provenance = is_array($model['provenance'] ?? null) ? $model['provenance'] : [];
     $aiNote = '';
     if (($ai['enabled'] ?? false) === true) {
         $p = trim((string) ($ai['provider'] ?? ''));
@@ -114,6 +117,11 @@ function brig_render_report_html(array $m): string
         . '<td><div class="section-title">Strategic priorities</div><ul>' . $list($narr['priorities'] ?? [], 'None identified.') . '</ul></td>'
         . '</tr></table>'
         . '<div class="section-title">Board attention / decision</div><ul>' . $list($narr['boardActions'] ?? [], 'No board action required.') . '</ul>'
+        . ($provenance ? '<div class="section-title">Data provenance</div><ul>' . $list(array_map(static function ($p) {
+            return ($p['metric_key'] ?? 'Metric') . ': ' . ($p['sourceSystem'] ?? 'source not recorded')
+                . (($p['reportingOwner'] ?? '') !== '' ? ' · owner ' . $p['reportingOwner'] : '')
+                . (($p['extractionDate'] ?? '') !== '' ? ' · extracted ' . $p['extractionDate'] : '');
+        }, $provenance), 'Not recorded.') . '</ul>' : '')
         . '<div class="footer"><p>' . $note . '</p><p>' . $methodology . '</p>'
         . ($aiNote !== '' ? '<p>' . $aiNote . '</p>' : '')
         . '<p>CISO Board Reporting Intelligence Generator is an independently developed analytical and executive communication aid. It is not a cybersecurity audit, certification, legal or regulatory advice, or a substitute for professional judgement. Results depend on the quality of user-supplied data. Inferred relationships are analytical signals, not proof of causality.</p></div>'

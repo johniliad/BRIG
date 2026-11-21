@@ -89,7 +89,9 @@ function brig_render_report_pdf_filepdf(array $m): ?string
     }
 
     $org = brig_fp_text((string) ($profile['organisationLabel'] ?? 'Organisation'));
-    $period = brig_fp_text(($profile['comparisonPeriod'] ?? '') . ' -> ' . ($profile['reportingPeriod'] ?? ''));
+    $comparison = trim((string) ($profile['comparisonPeriod'] ?? ''));
+    $current = trim((string) ($profile['reportingPeriod'] ?? 'Current period'));
+    $period = brig_fp_text($comparison !== '' ? $comparison . ' -> ' . $current : $current);
     $audience = brig_fp_text(str_replace('_', ' ', (string) ($profile['audience'] ?? 'general board')));
     $status = brig_fp_text((string) ($pos['status'] ?? ''));
     $confidence = brig_fp_text((string) ($conf['boardNarrativeConfidence'] ?? ''));
@@ -228,6 +230,15 @@ function brig_render_report_pdf_filepdf(array $m): ?string
         $bullets($narr['priorities'] ?? [], 'None identified.');
         $section('Board attention / decision');
         $bullets($narr['boardActions'] ?? [], 'No board action required.');
+        if (!empty($model['provenance']) && is_array($model['provenance'])) {
+            $section('Data provenance');
+            $items = array_map(static function ($p) {
+                return ($p['metric_key'] ?? 'Metric') . ': ' . ($p['sourceSystem'] ?? 'source not recorded')
+                    . (($p['reportingOwner'] ?? '') !== '' ? ' | owner ' . $p['reportingOwner'] : '')
+                    . (($p['extractionDate'] ?? '') !== '' ? ' | extracted ' . $p['extractionDate'] : '');
+            }, $model['provenance']);
+            $bullets($items, 'Not recorded.');
+        }
 
         // Footer
         $pdf->SetTextColor(82, 102, 117);

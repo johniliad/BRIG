@@ -22,8 +22,8 @@ export function AboutPage() {
           iliadis.net<span className="visually-hidden"> (opens in a new tab)</span>
         </a>{' '}
         ecosystem. It is a Cybersecurity Intelligence Engine that validates data, computes trends and
-        directionality, evaluates cross-metric relationships and contradictions, scores materiality and
-        confidence, and selects a storyline.
+          directionality, evaluates cross-metric relationships and contradictions, separates inherent importance,
+          observed signal strength and evidence confidence, and selects a storyline.
       </p>
 
       <SectionCard title="What this product is — and is not">
@@ -51,22 +51,22 @@ export function AboutPage() {
           <li><strong>Target / threshold comparison</strong> — against any targets or thresholds you supply.</li>
           <li><strong>Relationships</strong> — configured heuristics across metrics (e.g. MFA coverage vs identity incidents). These are analytical signals, not proof of causality.</li>
           <li><strong>Contradictions &amp; nuance</strong> — the engine deliberately looks for patterns where a simplistic conclusion would mislead (e.g. availability up while restore-testing down).</li>
-          <li><strong>Materiality</strong> — a versioned weighted score combining board relevance, severity, magnitude, target breach, persistence, relationship strength, business impact and regulatory relevance.</li>
-          <li><strong>Confidence</strong> — “Board Narrative Confidence” reflects evidence quality (data completeness, comparability, relationships, contradictions), not model probability.</li>
+          <li><strong>Importance and observed signal</strong> — stable inherent importance is kept separate from the rule-based observed signal created by movement, target position, tolerance breaches, persistence and relationships. Missing evidence contributes zero.</li>
+          <li><strong>Confidence</strong> — “Board Narrative Confidence” reflects current-value completeness, comparison coverage, history depth, data quality, provenance, relationships and contradictions—not model probability.</li>
           <li><strong>Storyline selection</strong> — a library of story rules (conditions, priority, confidence requirements, counter-signals) selects the dominant storyline.</li>
         </ol>
       </SectionCard>
 
       <SectionCard title="How a report is constructed — and which information is used">
         <p>
-          You choose the metrics you actually measure and enter a current value, an optional comparison value,
-          optional targets/thresholds and a data-quality note. From that evidence the engine decides the report
-          as follows:
+          You choose the metrics you actually measure, explicitly identify their data status, and provide the
+          directionality-specific evidence required by the form. Available metrics require a current value;
+          comparison, target and tolerance inputs determine which analytical conclusions are possible.
         </p>
         <ul className="tick-list">
-          <li><strong>Findings</strong> are produced only where a change is material (magnitude, threshold breach or materiality), then ranked by materiality.</li>
-          <li><strong>The dominant storyline</strong> is the highest-priority story rule whose conditions are satisfied (ties broken by how many conditions are supported). If no rule dominates, BRIG returns a “broadly stable” or “insufficient evidence” position rather than inventing a trend.</li>
-          <li><strong>The narrative</strong> presents the overall executive position, a headline, the few highest-materiality signals, positive developments, key risks/tensions, strategic priorities, board actions and a short methodology/confidence note.</li>
+          <li><strong>Findings</strong> require observed evidence: meaningful movement, a target gap, a tolerance breach or a supporting relationship. Current-only values remain descriptive KPIs.</li>
+          <li><strong>The dominant storyline</strong> is the highest-priority story rule whose conditions are satisfied. Equal-priority matches are ranked by supporting movement, target/tolerance and persistence evidence, then by condition count. If no rule dominates, BRIG returns a current-position, broadly stable or insufficient-evidence conclusion rather than inventing a trend.</li>
+          <li><strong>The narrative</strong> presents the overall executive position, a headline, the strongest evidence-supported signals, positive developments, key risks/tensions, strategic priorities, Board actions and a short methodology/confidence note.</li>
           <li><strong>Conciseness by design</strong> — lists are capped (e.g. top signals, at most five risks/priorities) so the report never becomes a KPI dump, even with 100+ metrics selected.</li>
           <li><strong>Audience lens</strong> — the chosen Board audience (General Board, Audit/Risk Committee, CFO, Executive, Technology) influences ordering and vocabulary; it never changes the underlying facts.</li>
           <li><strong>Charts</strong> are selected deterministically from metric type, periods available, unit compatibility and the storyline’s preferred visuals; units are kept consistent within a chart to avoid misleading comparison.</li>
@@ -77,8 +77,9 @@ export function AboutPage() {
       <SectionCard title="When — and whether — your data is stored">
         <p>
           <strong>By default nothing is stored and nothing is transmitted.</strong> In Private / Deterministic mode the
-          entire analysis runs in your browser. There is no account, no analytics that capture metric values, and no
-          automatic persistence to local storage.
+          entire analysis runs in your browser. There is no account and no analytics that capture metric values.
+          A versioned working draft is automatically stored in this browser so interrupted work can be resumed;
+          it can be discarded with “Start over” and is not a server save.
         </p>
         <ul className="tick-list">
           <li><strong>Optional save (opt-in).</strong> If you explicitly choose “Save report to server”, the report model is sent to this server and stored in MySQL. A random access token is shown <em>once</em>; only its SHA-256 hash is stored, and the record expires automatically (7, 30 or 90 days). It can be reopened only with both the report id and the token, and there is a per-IP save limit.</li>

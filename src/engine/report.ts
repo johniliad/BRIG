@@ -13,13 +13,15 @@ import type {
 import { LIBRARY_VERSION } from '../data/library';
 import { formatMetricValue } from './format';
 
-export const METHODOLOGY_VERSION = '1.0.0';
+export const METHODOLOGY_VERSION = '2.0.0';
 export const RULE_VERSION = '1.0.0';
+export const REPORT_SCHEMA_VERSION = 2;
+export const APPLICATION_VERSION = '1.1.2';
 
 /**
  * Build the ReportFacts object — the ONLY analytical contract passed to the
  * optional Executive Writing Layer (R9). It contains the approved evidence
- * boundary: facts, findings, relationships, contradictions, materiality and
+ * boundary: facts, findings, relationships, contradictions, observed signals and
  * approved numbers. It never contains the full 120-metric database dump.
  */
 export function buildReportFacts(
@@ -40,7 +42,7 @@ export function buildReportFacts(
 
   const calculated_metrics = Array.from(materiality.values()).map((m) => ({
     metric_key: m.metric_key,
-    label: 'Materiality score',
+    label: 'Observed signal evidence detail',
     value: m.score,
     unit: 'score',
   }));
@@ -76,7 +78,13 @@ export function buildReportFacts(
     explanation: c.explanation,
   }));
 
-  const matList = Array.from(materiality.values()).map((m) => ({ metric_key: m.metric_key, score: m.score, band: m.band }));
+  const matList = Array.from(materiality.values()).map((m) => ({
+    metric_key: m.metric_key,
+    score: m.score,
+    band: m.band,
+    signalStrength: m.signalStrength,
+    inherentImportance: m.inherentImportance,
+  }));
 
   const defByKey = new Map(selected.map((s) => [s.def.metric_key, s.def]));
   const approved_numbers = selected
@@ -126,6 +134,8 @@ export function buildBoardReportModel(
   ai?: AiMeta,
 ): BoardReportModel {
   return {
+    schema_version: REPORT_SCHEMA_VERSION,
+    application_version: APPLICATION_VERSION,
     facts: analysis.facts,
     analysis: {
       findings: analysis.findings,
@@ -144,5 +154,6 @@ export function buildBoardReportModel(
     },
     metadata: { ...analysis.metadata, privacy_mode: privacyMode },
     ai: ai ?? { enabled: false, provider: null, model: null, generated: false, validated: false },
+    provenance: analysis.provenance ?? [],
   };
 }

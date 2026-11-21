@@ -4,20 +4,25 @@ require_once __DIR__ . '/../lib/bootstrap.php';
 require_once __DIR__ . '/../lib/data.php';
 
 brig_apply_headers();
-brig_require_method('GET');
+brig_require_method('POST');
 
 $pdo = brig_db();
 if ($pdo === null) {
     brig_error('Report persistence is not configured on this deployment.', 503, 'persistence_disabled');
 }
 
-$id = isset($_GET['id']) ? (string) $_GET['id'] : '';
-$token = isset($_GET['token']) ? (string) $_GET['token'] : '';
+$body = brig_read_json_input(brig_request_limit('small', 8192));
+$id = isset($body['id']) ? trim((string) $body['id']) : '';
+$token = isset($body['token']) ? trim((string) $body['token']) : '';
 if ($id === '' || $token === '') {
     brig_error('Report id and token are required.', 400, 'missing_credentials');
 }
+if (!preg_match('/^[0-9a-f]{32}$/i', $id) || !preg_match('/^[0-9a-f]{48}$/i', $token)) {
+    brig_error('Report credentials are not valid.', 400, 'invalid_credentials');
+}
 
 try {
+    $pdo->exec('DELETE FROM saved_reports WHERE expires_at IS NOT NULL AND expires_at <= UTC_TIMESTAMP()');
     $stmt = $pdo->prepare(
         'SELECT report_facts_json, narrative_json, report_model_json, created_at, expires_at FROM saved_reports
          WHERE id = :id AND access_token_hash = :hash AND (expires_at IS NULL OR expires_at > UTC_TIMESTAMP())

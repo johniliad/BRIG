@@ -1,6 +1,8 @@
 import pptxgen from 'pptxgenjs';
+import { reportFilename } from './formatters';
 import type { AiMeta, AnalysisResult, ChartSpec } from '../types';
 import { BRAND_NAME } from '../data/demo';
+import { reportingWindow } from './formatters';
 
 /**
  * PPTX export. Mirrors the on-screen / PDF Board report: title, executive
@@ -84,7 +86,7 @@ export async function exportPptx(
   s1.background = { color: LIGHT };
   s1.addText(BRAND_NAME, { x: 0.6, y: 2.0, w: 12.1, h: 1.0, fontSize: 30, bold: true, color: NAVY });
   s1.addText(organisationLabel, { x: 0.6, y: 3.05, w: 12.1, h: 0.5, fontSize: 18, color: BRIDGE });
-  s1.addText(`${profile.comparisonPeriod} → ${profile.reportingPeriod} · ${profile.audience.replace(/_/g, ' ')} · ${profile.industry}`, {
+  s1.addText(`${reportingWindow(profile)} · ${profile.audience.replace(/_/g, ' ')} · ${profile.industry}`, {
     x: 0.6, y: 3.6, w: 12.1, h: 0.4, fontSize: 13, color: GREY,
   });
   s1.addText('Application-derived analysis — not an audit or certification. If generated from demo data, all figures are fictional.', {
@@ -217,6 +219,10 @@ export async function exportPptx(
         options: { fontSize: 10, color: GREY, breakLine: true, paraSpaceAfter: 8 },
       },
       ...aiDisclosure,
+      ...((analysis.provenance?.length ?? 0) > 0 ? [{
+        text: `Data provenance recorded for ${analysis.provenance.length} analysed metric(s).`,
+        options: { fontSize: 9, color: GREY, breakLine: true, paraSpaceAfter: 8 },
+      }] : []),
       {
         text: 'This application is independently developed. It is an analytical and executive communication aid, not a cybersecurity audit, certification, legal or regulatory advice, or a substitute for professional judgement. Results depend on the quality of user-supplied data. Inferred relationships are analytical signals, not proof of causality.',
         options: { fontSize: 9, color: GREY, italic: true },
@@ -225,6 +231,6 @@ export async function exportPptx(
     { x: 0.5, y: 1.3, w: 12.3, h: 5.2, valign: 'top' },
   );
 
-  const safe = organisationLabel.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase() || 'board';
-  await pptx.writeFile({ fileName: `ciso-board-report-${safe}-${profile.reportingPeriod.replace(/[^a-z0-9]+/gi, '-')}.pptx`.toLowerCase() });
+  void organisationLabel;
+  await pptx.writeFile({ fileName: reportFilename(profile, 'pptx') });
 }

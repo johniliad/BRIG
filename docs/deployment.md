@@ -168,7 +168,9 @@ curl -s -X POST https://yourdomain.com/brig/api/reports/pdf.php \
 ## 6. Step 4 — (Optional) Enable MySQL persistence
 
 Report saving is **opt-in in the UI and token-secured** (a random token is shown once; only its SHA-256
-hash is stored; records expire automatically, default 30 days, max 90). The app works with **no database**;
+hash is stored; records are deleted after expiry during subsequent save/open traffic, default 30 days,
+max 90). Saved-report retrieval is a JSON `POST`, so the token is never placed in a URL, browser history
+or ordinary query-string logs. The app works with **no database**;
 if none is configured, the save panel returns a clear "persistence not configured" message.
 
 ### Create the database and user (cPanel)
@@ -326,6 +328,9 @@ per-session regenerations, and a global daily budget. If you see
   `php api/tools/reset_ratelimit.php` (CLI only; over HTTP it returns 403).
 - Counters live in the system temp directory (`…/brig-ratelimit`) and expire on
   their own per each window, so a block lifts automatically.
+- Expired AI sessions are removed opportunistically. To sweep the full AI token store and remove
+  markers from retired token batches, run `php api/tools/cleanup_ai_tokens.php`. Markers for tokens still
+  in the active allow-list are retained, so one-time tokens cannot become reusable.
 - The AI panel's success line reports the provider/model actually used
   (e.g. "Enhanced wording from Groq · llama-3.1-8b-instant"); `POST /api/llm/generate.php`
   also returns `X-BRIG-Provider-Requested` / `X-BRIG-Provider-Used` headers so you can
@@ -389,6 +394,8 @@ RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L,NE]
 | Providers | `GET /api/llm/providers.php` | list; `enabled` reflects config |
 | Server PDF | `POST /api/reports/pdf.php` | `application/pdf` (File_PDF) or `text/html` fallback |
 | Persistence | `POST /api/reports/save.php` | JSON `id`+`token` (or 503 if no DB) |
+| Open persisted report | `POST /api/reports/get.php` with JSON `{id,token}` | report JSON; credentials absent from URL |
+| Request limits | send an oversized JSON body | `413` with `request_too_large` |
 | Demo | click “See Example Report (demo)” | Report renders with counter-signals |
 | Determinism | `npm test` (locally) | all tests pass, incl. `security-headers.test.ts` |
 | Security headers | `curl -sI https://yourdomain.com/brig/ \| grep -iE 'strict-transport\|x-frame\|x-content-type\|content-security\|cross-origin\|permissions-policy'` | every header present |
@@ -412,9 +419,13 @@ RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L,NE]
   config outside the web root.
 - **ReportFacts-only AI.** The proxy sends a minimal evidence payload, separates trusted instructions /
   trusted facts / untrusted notes, and **validates output** (schema + numeric match to approved numbers +
-  banned-claim filter). Any failure → deterministic fallback.
-- **Public AI governor** (per-IP/min, per-IP/hour, per-session, global daily) with 429 + `Retry-After`.
-- **Opt-in persistence**: token shown once, only its hash stored, automatic expiry, per-IP save limit.
+  banned-claim filter). The complete deterministic ReportFacts model remains in BRIG; the provider receives a
+  bounded executive-writing view containing up to eight prioritized findings and only their referenced metric
+  evidence, plus bounded relationships, contradictions, priorities and actions. Any failure → deterministic fallback.
+- **Public AI governor** (per-IP/min, per-IP/hour, per-session, global daily) with atomic file counters,
+  429 + `Retry-After`; JSON endpoints enforce configurable application-level body limits.
+- **Opt-in persistence**: token shown once, only its hash stored, JSON POST retrieval, deletion after
+  expiry, per-IP save limit.
 - **Defensive `.htaccess`** (headers, listing off, sensitive folders/files blocked), prepared statements,
   strict input checks, no debug traces.
 - **Security headers on every response** (SPA, static assets, API JSON, branded error documents):
@@ -477,7 +488,8 @@ To enable server-side PDF after the fact: install File_PDF (Step 3) or set `pdf.
 | AI 401 "Invalid API Key" | key is wrong/expired, belongs to another provider, is wrapped in quotes/spaces, or you edited a config file the app doesn't load | use the real key (Groq `gsk_…`, Gemini `AIza…`, OpenRouter `sk-or-…`); open `/api/health.php` → `config_source` + `providers[].key_shape_ok` |
 | AI 429 `rate_limited_session` | per-session regeneration cap | raise `per_session_ai_regenerations` (default 20) or `php api/tools/reset_ratelimit.php` |
 | AI 429 `rate_limited_ip` / `rate_limited_hour` | per-IP governor | wait, or `php api/tools/reset_ratelimit.php`; tune `governor` |
-| API 404s under a subfolder | base path | API is same-origin `/api/...`; host app at the path you expect |
+| API 404s under a subfolder | stale frontend build or wrong upload root | API URLs are app-relative; rebuild, upload the complete package, and confirm the app root |
+| Unsure which `brig.php` is active | multiple files exist | use `BRIG_CONFIG_PATH` or `~/brig_private-config/brig.php`; repository-root `brig.php` is not loaded and should not contain credentials |
 | `.htaccess` 500 | `Header`/`RewriteEngine` unsupported | comment the offending block; most cPanel hosts support both |
 | `403 Forbidden` on **every** URL (site was working) | Cloudflare origin lock active but the `X-Origin-Secret` header is missing or mismatched | deploy the CF Request Header Transform Rule, confirm its value matches `private-config/cf-origin-secret.txt`, and confirm you uploaded `dist/.htaccess` (not the repo template) — see §15 |
 | Direct origin IP / temporary URL returns `403` | expected — the origin only accepts Cloudflare traffic | test through the Cloudflare hostname, or send `-H "X-Origin-Secret: …"` |

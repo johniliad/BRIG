@@ -12,13 +12,10 @@ export function aiMeta(providerLabel: string, providerModel: string): AiMeta {
   };
 }
 
-function boardActionsFromAi(items: string[]): BoardAction[] {
-  return items.map((title) => ({
-    category: 'request_management_action',
-    title,
-    rationale: '',
-    priority: 'primary',
-    relatedMetrics: [],
+function boardActionsFromAi(items: string[], deterministic: BoardAction[]): BoardAction[] {
+  return deterministic.map((action, index) => ({
+    ...action,
+    title: items[index]?.trim() || action.title,
   }));
 }
 
@@ -49,7 +46,7 @@ export function withAiWording(
       priorities: pick(enhanced.strategic_priorities, n.priorities),
       boardActions:
         enhanced.board_actions && enhanced.board_actions.length > 0
-          ? boardActionsFromAi(enhanced.board_actions)
+          ? boardActionsFromAi(enhanced.board_actions, n.boardActions)
           : n.boardActions,
     },
   };

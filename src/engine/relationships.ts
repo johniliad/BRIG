@@ -4,7 +4,7 @@ import { RELATIONSHIP_RULES, matchesPattern } from '../data/relationships';
 export interface RelationshipEvaluation {
   results: RelationshipResult[];
   triggered: RelationshipResult[];
-  /** Max relationship strength per metric key (feeds materiality). */
+  /** Max relationship strength per metric key (feeds observed signal detail). */
   strengthByMetric: Map<string, number>;
   /** Count of triggered supportive (non-contradiction) relationships. */
   supportCount: number;
@@ -17,7 +17,7 @@ export interface RelationshipEvaluation {
 export function evaluateRelationships(trends: Map<string, TrendResult>): RelationshipEvaluation {
   const results: RelationshipResult[] = [];
   const strengthByMetric = new Map<string, number>();
-  let supportCount = 0;
+  const supportivePairs = new Set<string>();
 
   for (const rule of RELATIONSHIP_RULES) {
     const a = trends.get(rule.metricA);
@@ -38,7 +38,9 @@ export function evaluateRelationships(trends: Map<string, TrendResult>): Relatio
     results.push(result);
 
     if (triggered) {
-      if (rule.type !== 'contradiction') supportCount += 1;
+      if (rule.type !== 'contradiction') {
+        supportivePairs.add([rule.metricA, rule.metricB].sort().join('|'));
+      }
       for (const key of [rule.metricA, rule.metricB]) {
         const current = strengthByMetric.get(key) ?? 0;
         if (rule.strength > current) strengthByMetric.set(key, rule.strength);
@@ -47,5 +49,5 @@ export function evaluateRelationships(trends: Map<string, TrendResult>): Relatio
   }
 
   const triggered = results.filter((r) => r.triggered);
-  return { results, triggered, strengthByMetric, supportCount };
+  return { results, triggered, strengthByMetric, supportCount: supportivePairs.size };
 }

@@ -1,4 +1,5 @@
 import type { AiMeta, AnalysisResult } from '../types';
+import { apiUrl } from './paths';
 
 /**
  * Client for the OPTIONAL server features:
@@ -8,8 +9,6 @@ import type { AiMeta, AnalysisResult } from '../types';
  * Nothing here runs unless the user explicitly chooses to save, or requests a
  * server PDF. The deterministic report is always available without these.
  */
-
-const BASE = '';
 
 export interface SaveMeta {
   retentionDays?: number;
@@ -33,7 +32,7 @@ async function parseError(res: Response): Promise<string> {
 }
 
 export async function saveReport(model: AnalysisResult, meta: SaveMeta = {}): Promise<SavedRef> {
-  const res = await fetch(`${BASE}/api/reports/save.php`, {
+  const res = await fetch(apiUrl('reports/save.php'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     body: JSON.stringify({ model, meta }),
@@ -53,8 +52,11 @@ export interface LoadedReport {
 }
 
 export async function getReport(id: string, token: string): Promise<LoadedReport> {
-  const url = `${BASE}/api/reports/get.php?id=${encodeURIComponent(id)}&token=${encodeURIComponent(token)}`;
-  const res = await fetch(url, { headers: { Accept: 'application/json' } });
+  const res = await fetch(apiUrl('reports/get.php'), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({ id, token }),
+  });
   if (!res.ok) throw new Error(await parseError(res));
   const json = await res.json();
   if (!json.ok) throw new Error(json.error || 'Could not load the report.');
@@ -69,7 +71,7 @@ export async function getReport(id: string, token: string): Promise<LoadedReport
  */
 export async function fetchServerPdf(model: AnalysisResult, ai?: AiMeta): Promise<Response> {
   const payload = ai ? { ...model, ai } : model;
-  return fetch(`${BASE}/api/reports/pdf.php`, {
+  return fetch(apiUrl('reports/pdf.php'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ model: payload }),

@@ -55,6 +55,43 @@ function brig_ai_store_dir(): string
     return $dir;
 }
 
+/**
+ * Remove expired/malformed sessions and used-token markers from retired token
+ * batches. Markers for hashes still present in the allow-list are never removed:
+ * doing so would make a one-time token reusable.
+ *
+ * @return array{sessions:int,used:int,scanned:int}
+ */
+function brig_ai_cleanup(?int $scanLimit = null): array
+{
+    $cfg = brig_config()['ai'] ?? [];
+    $limit = $scanLimit ?? (int) ($cfg['cleanup_scan_limit'] ?? 50);
+    $limit = $limit <= 0 ? PHP_INT_MAX : $limit;
+    $dir = brig_ai_store_dir();
+    $removedSessions = 0;
+    $removedUsed = 0;
+    $scanned = 0;
+    $now = time();
+
+    foreach (glob($dir . '/sessions/*.json') ?: [] as $file) {
+        if ($scanned++ >= $limit) break;
+        $data = json_decode((string) @file_get_contents($file), true);
+        if (!is_array($data) || (int) ($data['expires'] ?? 0) <= $now) {
+            if (@unlink($file)) $removedSessions++;
+        }
+    }
+
+    $allowed = array_fill_keys(brig_ai_allowed_hashes(), true);
+    foreach (glob($dir . '/used/*') ?: [] as $file) {
+        if ($scanned++ >= $limit) break;
+        $hash = basename($file);
+        if (!preg_match('/^[0-9a-f]{64}$/', $hash) || !isset($allowed[$hash])) {
+            if (@unlink($file)) $removedUsed++;
+        }
+    }
+    return ['sessions' => $removedSessions, 'used' => $removedUsed, 'scanned' => $scanned];
+}
+
 function brig_ai_normalize_token(string $token): ?string
 {
     $t = strtolower(trim($token));
@@ -68,6 +105,7 @@ function brig_ai_normalize_token(string $token): ?string
  */
 function brig_ai_redeem(string $token): array
 {
+    brig_ai_cleanup();
     $t = brig_ai_normalize_token($token);
     if ($t === null) {
         brig_error('Invalid AI access token format. A token is 64 hexadecimal characters (256 bits).', 400, 'invalid_token');
@@ -116,9 +154,14 @@ function brig_ai_session_valid(?string $session): bool
     }
     $data = json_decode((string) @file_get_contents($file), true);
     if (!is_array($data) || empty($data['expires'])) {
+        @unlink($file);
         return false;
     }
-    return (int) $data['expires'] > time();
+    if ((int) $data['expires'] <= time()) {
+        @unlink($file);
+        return false;
+    }
+    return true;
 }
 
 /** Abort the request unless a valid AI session is presented. */

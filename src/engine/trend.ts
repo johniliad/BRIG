@@ -1,5 +1,5 @@
 import type { MagnitudeBand, MetricDefinition, MetricObservation, TrendResult } from '../types';
-import { interpretMovement, isThresholdBreached, targetGap } from './directionality';
+import { interpretMovement, isTargetMissed, isThresholdBreached, targetGap } from './directionality';
 
 /**
  * Default magnitude bands (spec §12). These are DEFAULTS ONLY and must not be
@@ -40,7 +40,7 @@ export function magnitudeScoreForBand(band: MagnitudeBand): number {
     case 'material':
       return 1.0;
     default:
-      return 0.2;
+      return 0;
   }
 }
 
@@ -97,9 +97,19 @@ export function computeTrend(
     else band = 'moderate'; // non-zero change with undefined relative baseline
   }
 
-  const interpretation = interpretMovement(metric, current, previous, obs.target);
+  const interpretation = interpretMovement(metric, current, previous, obs.target, obs.lowerThreshold, obs.upperThreshold);
   const gap = targetGap(current, obs.target);
-  const breached = isThresholdBreached(metric, current, obs.threshold);
+  const hasTargetEvidence = obs.target !== null ||
+    (metric.directionality === 'target_range' && obs.lowerThreshold !== null && obs.upperThreshold !== null);
+  const outsideTwoSidedTolerance = isThresholdBreached(metric, current, null, obs.lowerThreshold, obs.upperThreshold);
+  const targetBreached = metric.directionality === 'target_value'
+    ? outsideTwoSidedTolerance
+    : isTargetMissed(metric, current, obs.target) ||
+      (metric.directionality === 'target_range' && outsideTwoSidedTolerance);
+  const hasThresholdEvidence = metric.directionality === 'target_value' || metric.directionality === 'target_range'
+    ? obs.lowerThreshold !== null && obs.upperThreshold !== null
+    : obs.threshold !== null;
+  const breached = isThresholdBreached(metric, current, obs.threshold, obs.lowerThreshold, obs.upperThreshold);
 
   const series: number[] = [...obs.history, previous, current].filter(
     (v): v is number => v !== null && v !== undefined && !Number.isNaN(v),
@@ -118,6 +128,9 @@ export function computeTrend(
     band,
     interpretation,
     targetGap: gap,
+    hasTargetEvidence,
+    targetBreached,
+    hasThresholdEvidence,
     thresholdBreached: breached,
     persistencePeriods,
     magnitudeScore: magnitudeScoreForBand(band),

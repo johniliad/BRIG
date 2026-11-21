@@ -15,7 +15,7 @@ require_once __DIR__ . '/../lib/pdf_filepdf.php';
 brig_apply_headers();
 brig_require_method('POST');
 
-$body = brig_read_json_input();
+$body = brig_read_json_input(brig_request_limit('report', 2097152));
 $model = $body['model'] ?? null;
 if (!is_array($model) || !isset($model['narrative'])) {
     brig_error('A valid report model is required.', 400, 'invalid_model');

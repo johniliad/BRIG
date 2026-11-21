@@ -17,7 +17,7 @@ if (!brig_counter_hit('save:' . brig_client_ip(), 30, 3600)) {
     brig_error('Save limit reached for this hour. Please try again later.', 429, 'save_rate_limited');
 }
 
-$body = brig_read_json_input();
+$body = brig_read_json_input(brig_request_limit('report', 2097152));
 $model = $body['model'] ?? null;
 if (!is_array($model) || !isset($model['narrative']) || !isset($model['facts'])) {
     brig_error('A valid report model (with narrative and facts) is required.', 400, 'invalid_model');
@@ -36,6 +36,8 @@ $tokenHash = hash('sha256', $token);
 $expires = gmdate('Y-m-d H:i:s', time() + $retentionDays * 86400);
 
 try {
+    // Keep expiry equivalent to deletion, not merely loss of access.
+    $pdo->exec('DELETE FROM saved_reports WHERE expires_at IS NOT NULL AND expires_at <= UTC_TIMESTAMP()');
     $stmt = $pdo->prepare(
         'INSERT INTO saved_reports (id, organisation_label, reporting_period, audience, executive_status, confidence, report_facts_json, narrative_json, report_model_json, access_token_hash, expires_at)
          VALUES (:id, :org, :period, :audience, :status, :confidence, :facts, :narrative, :model, :token_hash, :expires)'

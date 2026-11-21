@@ -41,6 +41,7 @@ describe('withAiWording', () => {
     expect(out.narrative.positiveDevelopments).toEqual(['ai-pos']);
     expect(out.narrative.priorities).toEqual(['ai-prio']);
     expect(out.narrative.boardActions[0].title).toBe('AI action');
+    expect(out.narrative.boardActions[0]).toMatchObject({ category: 'maintain_course', rationale: 'r', priority: 'primary', relatedMetrics: [] });
     // facts object is the SAME reference — never recomputed or altered
     expect(out.facts).toBe(a.facts);
     // the original analysis is not mutated

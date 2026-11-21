@@ -607,8 +607,24 @@ export interface StorylineEvaluation {
   primary: StorylineResult;
 }
 
-function fallbackStoryline(hasAnyComparison: boolean, metricCount: number): StorylineResult {
+function fallbackStoryline(hasAnyComparison: boolean, metricCount: number, hasPositionEvidence: boolean): StorylineResult {
   if (!hasAnyComparison && metricCount > 0) {
+    if (hasPositionEvidence) {
+      return {
+        storyline_key: 'current_position_only',
+        title: 'Current position assessed; trajectory is not available',
+        primary: true,
+        confidence: 'Low',
+        severity: 'info',
+        supportingMetrics: [],
+        counterSignals: [],
+        executiveExplanation: 'Targets or tolerances support a current-position assessment, but no comparison period was provided. The report therefore does not infer improvement or deterioration.',
+        boardImplication: 'Use the target and tolerance position for oversight, and add comparison data before relying on trajectory conclusions.',
+        recommendedAction: 'monitor',
+        preferredCharts: ['kpi', 'target_bar'],
+        variant: 0,
+      };
+    }
     return {
       storyline_key: 'data_insufficient',
       title: 'Insufficient comparison data to support a strong conclusion',
@@ -618,7 +634,7 @@ function fallbackStoryline(hasAnyComparison: boolean, metricCount: number): Stor
       supportingMetrics: [],
       counterSignals: [],
       executiveExplanation:
-        'Only limited current-position data was provided, without a comparison period or target. The report therefore describes the current position without inferring trends.',
+        'Only current values were provided, without comparison, target or tolerance evidence. The report therefore records the values without inferring trends or current-position significance.',
       boardImplication: 'Treat any conclusions as indicative until comparison and target data are available.',
       recommendedAction: 'investigate_data_quality',
       preferredCharts: ['kpi'],
@@ -647,9 +663,11 @@ export function evaluateStoryRules(
   observations: Map<string, MetricObservation>,
   metricCount: number,
 ): StorylineEvaluation {
-  const matched: Array<{ rule: StoryRule; result: StorylineResult; satisfied: number }> = [];
+  const matched: Array<{ rule: StoryRule; result: StorylineResult; satisfied: number; evidenceScore: number }> = [];
   let hasAnyComparison = false;
+  let hasPositionEvidence = false;
   for (const t of trends.values()) if (t.hasComparison) hasAnyComparison = true;
+  for (const t of trends.values()) if (t.hasTargetEvidence || t.hasThresholdEvidence) hasPositionEvidence = true;
 
   for (const rule of STORY_RULES) {
     const m = ruleMatches(rule, trends, observations);
@@ -670,16 +688,22 @@ export function evaluateStoryRules(
       preferredCharts: rule.preferredCharts,
       variant: variantIndex,
     };
-    matched.push({ rule, result, satisfied: m.satisfied });
+    const evidenceScore = m.supporting.reduce((sum, key) => {
+      const trend = trends.get(key);
+      if (!trend) return sum;
+      return sum + trend.magnitudeScore * 3 + (trend.thresholdBreached ? 2 : 0) + (trend.targetBreached ? 1 : 0) + Math.min(trend.persistencePeriods, 3) * 0.5;
+    }, 0);
+    matched.push({ rule, result, satisfied: m.satisfied, evidenceScore });
   }
 
   matched.sort((a, b) => {
     if (b.rule.priority !== a.rule.priority) return b.rule.priority - a.rule.priority;
+    if (b.evidenceScore !== a.evidenceScore) return b.evidenceScore - a.evidenceScore;
     return b.satisfied - a.satisfied;
   });
 
   if (matched.length === 0) {
-    const primary = fallbackStoryline(hasAnyComparison, metricCount);
+    const primary = fallbackStoryline(hasAnyComparison, metricCount, hasPositionEvidence);
     return { ranked: [primary], primary };
   }
 
