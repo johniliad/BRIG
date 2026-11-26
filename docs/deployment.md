@@ -467,6 +467,26 @@ npm run build             # rebuild dist/
 
 To enable server-side PDF after the fact: install File_PDF (Step 3) or set `pdf.file_pdf_path`.
 
+### Social card (LinkedIn / Open Graph)
+
+`public/img/brig-preview-linkedin.jpg` is the 1200 × 627 px (1.91:1) card referenced by
+`og:image` and `twitter:image`. LinkedIn crops link-preview images to 1.91:1, so the
+master cover (`pics-sources/BRIG2.jpg`, 3:2) is **recomposed, not cropped**: the
+illustration sits on the left, the wordmark / descriptor / tagline / author credit on
+the right, both lifted from the master so the original typography is preserved.
+
+```powershell
+pwsh -File scripts/make-social-card.ps1                 # ~62 KB JPEG at quality 88
+pwsh -File scripts/make-social-card.ps1 -Quality 92     # larger file, same 1200 x 627
+```
+
+The 3:2 cover `public/img/brig-preview.jpg` is unchanged and still serves the
+landing-page hero, the README and the GitHub social preview.
+
+After deploying, refresh LinkedIn's cached preview with the
+[Post Inspector](https://www.linkedin.com/post-inspector/) — LinkedIn caches a page's
+card for roughly a week, so an edited `og:image` is not picked up immediately.
+
 ---
 
 ## 13. Troubleshooting

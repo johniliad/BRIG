@@ -24,21 +24,25 @@
       property="og:description"
       content="BRIG — Board Risk &amp; Insights Generator — turns cybersecurity metrics into board-ready reports with graphs, statistics and AI-enhanced insights for executive cyber risk reporting."
     />
-    <!-- Social card: public/img/brig-preview.jpg (derived from pics-sources/BRIG2.jpg; also the
-         GitHub social preview). Keep the host in sync with CANONICAL_URL in src/services/seo.ts. -->
-    <meta property="og:image" content="https://brig.iliadis.net/img/brig-preview.jpg" />
+    <!-- Social card — LinkedIn / Open Graph landscape banner, 1200 x 627 px
+         (1.91:1). LinkedIn crops link-preview images to 1.91:1, so this card is
+         generated at exactly that ratio (from pics-sources/BRIG2.jpg) and shows
+         unclipped in a post. Regenerate with: pwsh -File scripts/make-social-card.ps1
+         Keep the host in sync with CANONICAL_URL in src/services/seo.ts. -->
+    <meta property="og:image" content="https://brig.iliadis.net/img/brig-preview-linkedin.jpg" />
+    <meta property="og:image:secure_url" content="https://brig.iliadis.net/img/brig-preview-linkedin.jpg" />
     <meta property="og:image:type" content="image/jpeg" />
-    <meta property="og:image:width" content="1600" />
-    <meta property="og:image:height" content="1067" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="627" />
     <meta
       property="og:image:alt"
-      content="BRIG — Board Risk and Insights Generator brand cover: boardroom and reporting illustration with the BRIG wordmark and the tagline 'Security Metrics to Executive Insights — Board-Ready Reports'. Built by Dr. John ILIADIS."
+      content="BRIG — Board Risk and Insights Generator social card: boardroom and reporting illustration beside the BRIG wordmark, the line 'Board Risk &amp; Insights Generator', the tagline 'Security Metrics to Executive Insights — Board-Ready Reports' and the credit 'Built by Dr. John ILIADIS'."
     />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="https://brig.iliadis.net/img/brig-preview.jpg" />
+    <meta name="twitter:image" content="https://brig.iliadis.net/img/brig-preview-linkedin.jpg" />
     <meta
       name="twitter:image:alt"
-      content="BRIG — Board Risk and Insights Generator brand cover: Security Metrics to Executive Insights — Board-Ready Reports. Built by Dr. John ILIADIS."
+      content="BRIG — Board Risk and Insights Generator social card: boardroom and reporting illustration, the BRIG wordmark and the tagline 'Security Metrics to Executive Insights — Board-Ready Reports'. Built by Dr. John ILIADIS."
     />
     <meta name="twitter:title" content="BRIG | Cybersecurity Board Reporting" />
     <meta

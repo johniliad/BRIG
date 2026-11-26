@@ -12,6 +12,7 @@ deploy.zip
 .env.*
 !.env.example
 private-config/
+.clinerules
 # Cloudflare origin-lock secret rendered into dist/.htaccess at build time.
 # NEVER commit the value; the repo only stores the placeholder in .htaccess.
 private-config/cf-origin-secret.txt
